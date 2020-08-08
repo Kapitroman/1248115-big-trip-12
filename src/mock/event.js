@@ -1,17 +1,17 @@
-import {EVENT_TYPE, DESTINATION} from "../const.js";
+import {EVENT_TYPES, DESTINATIONS} from "../const.js";
 import {getRandomInteger} from "../utils.js";
 
 const getEventType = () => {
-  const randomIndex = getRandomInteger(0, EVENT_TYPE.length - 1);
+  const randomIndex = getRandomInteger(0, EVENT_TYPES.length - 1);
 
-  return EVENT_TYPE[randomIndex];
+  return EVENT_TYPES[randomIndex];
 };
 
 const generateDestination = () => {
 
-  const randomIndex = getRandomInteger(0, DESTINATION.length - 1);
+  const randomIndex = getRandomInteger(0, DESTINATIONS.length - 1);
 
-  return DESTINATION[randomIndex];
+  return DESTINATIONS[randomIndex];
 };
 
 const maxDaysGap = 7;
@@ -29,14 +29,8 @@ const generateEventDate = () => {
 
 const generateOffers = () => {
   const countOffers = getRandomInteger(0, 5);
-  const offers = [];
   const titles = [`Order Uber`, `Add luggage`, `Rent a car`, `Add breakfast`, `Book tickets`, `Lunch in city`, `Switch to comfort`];
-  for (let i = 0; i < countOffers; i++) {
-    offers.push({
-      title: titles[getRandomInteger(0, titles.length - 1)],
-      cost: getRandomInteger(5, 100)
-    });
-  }
+  const offers = new Array(countOffers).fill().map(() => ({title: titles[getRandomInteger(0, titles.length - 1)], cost: getRandomInteger(5, 100)}));
 
   return offers;
 };
@@ -49,6 +43,6 @@ export const generateEvent = () => {
     date: generateEventDate(),
     cost: getRandomInteger(20, 1000),
     offers: generateOffers(),
-    isFavorite: Boolean(getRandomInteger(0, 1))
+    isFavorite: Math.random() > 0.5
   };
 };

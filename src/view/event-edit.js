@@ -1,5 +1,10 @@
 import {getFormatEditTime} from "./../utils.js";
-import {DESTINATION} from "./../const.js";
+import {DESTINATIONS} from "./../const.js";
+
+const getDestinations = (listDestinations) => {
+
+  return listDestinations.map((item) => `<option value="${item}"></option>`).join(``);
+};
 
 export const createEventEditTemplate = (event = {}) => {
   const {
@@ -85,10 +90,7 @@ export const createEventEditTemplate = (event = {}) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value=${destination} list="destination-list-1">
           <datalist id="destination-list-1">
-            <option value=${DESTINATION[0]}></option>
-            <option value=${DESTINATION[1]}></option>
-            <option value=${DESTINATION[2]}></option>
-            <option value=${DESTINATION[3]}></option>
+            ${getDestinations(DESTINATIONS)}
           </datalist>
         </div>
 

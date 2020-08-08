@@ -1,4 +1,4 @@
-import {getShortTime, getDateTime, durationTime} from "./../utils.js";
+import {getShortTime, getFullTime, durationTime} from "./../utils.js";
 
 export const createTripEventsItemTemplate = (event) => {
   const {type, destination, date, cost} = event;
@@ -13,9 +13,9 @@ export const createTripEventsItemTemplate = (event) => {
 
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="${getDateTime(date[0])}T${getShortTime(date[0])}">${getShortTime(date[0])}</time>
+            <time class="event__start-time" datetime="${getFullTime(date[0])}">${getShortTime(date[0])}</time>
             &mdash;
-            <time class="event__end-time" datetime="${getDateTime(date[1])}T${getShortTime(date[1])}">${getShortTime(date[1])}</time>
+            <time class="event__end-time" datetime="${getFullTime(date[1])}">${getShortTime(date[1])}</time>
           </p>
           <p class="event__duration">${durationTime(date[1], date[0])}</p>
         </div>

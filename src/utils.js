@@ -25,6 +25,10 @@ export const getDateTime = (date) => {
   return `${date.getFullYear()}-${dateTime[0]}-${dateTime[1]}`;
 };
 
+export const getFullTime = (date) => {
+  return `${getDateTime(date)}T${getShortTime(date)}`;
+};
+
 export const durationTime = (timeEnd, timeStart) => {
   const duration = (timeEnd - timeStart);
   if (duration < HOUR_IN_MS) {
