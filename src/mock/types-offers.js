@@ -1,14 +1,14 @@
 import {EVENT_TYPES} from "../const.js";
 
 export const typesOffers = {
-  [EVENT_TYPES[0]]: [[`Order Uber`, 50], [`Rent a car`, 20], [`Switch to comfort`, 20], [`Add luggage`, 30], [`Book tickets`, 40]],
-  [EVENT_TYPES[1]]: [[`Switch to comfort`, 20], [`Order Uber`, 50], [`Add luggage`, 30], [`Book tickets`, 40], [`Lunch in city`, 30]],
-  [EVENT_TYPES[2]]: [[`Order Uber`, 50], [`Switch to comfort`, 30], [`Add breakfast`, 50], [`Add luggage`, 30], [`Rent a car`, 20]],
-  [EVENT_TYPES[3]]: [[`Add luggage`, 30], [`Switch to comfort`, 30], [`Book tickets`, 40], [`Lunch in city`, 30], [`Order Uber`, 50]],
-  [EVENT_TYPES[4]]: [[`Order Uber`, 50], [`Add luggage`, 30], [`Book tickets`, 40], [`Lunch in city`, 30], [`Switch to comfort`, 20]],
-  [EVENT_TYPES[5]]: [[`Switch to comfort`, 20], [`Book tickets`, 40], [`Order Uber`, 50], [`Add luggage`, 30], [`Lunch in city`, 30]],
-  [EVENT_TYPES[6]]: [[`Order Uber`, 50], [`Switch to comfort`, 20], [`Add luggage`, 30], [`Book tickets`, 40], [`Rent a car`, 20]],
-  [EVENT_TYPES[7]]: [[`Order Uber`, 50], [`Add luggage`, 30], [`Switch to comfort`, 20], [`Book tickets`, 40], [`Lunch in city`, 30]],
-  [EVENT_TYPES[8]]: [[`Order Uber`, 50], [`Add breakfast`, 50], [`Switch to comfort`, 30], [`Add luggage`, 30], [`Rent a car`, 20]],
-  [EVENT_TYPES[9]]: [[`Book tickets`, 40], [`Order Uber`, 50], [`Add luggage`, 30], [`Switch to comfort`, 20], [`Lunch in city`, 30]]
+  [EVENT_TYPES[0]]: [{typeOffer: `luggage`, title: `Add luggage`, cost: 20}, {typeOffer: `taxi`, title: `order Uber`, cost: 30}, {typeOffer: `comfort`, title: `Switch to comfort`, cost: 50}, {typeOffer: `meal`, title: `Add breakfast`, cost: 40}, {typeOffer: `meal`, title: `Lunch in city`, cost: 70}],
+  [EVENT_TYPES[1]]: [{typeOffer: `comfort`, title: `Switch to comfort`, cost: 20}, {typeOffer: `train`, title: `Book tickets`, cost: 40}, {typeOffer: `taxi`, title: `order Uber`, cost: 30}],
+  [EVENT_TYPES[2]]: [{typeOffer: `taxi`, title: `order Uber`, cost: 30}, {typeOffer: `comfort`, title: `Switch to comfort`, cost: 20}],
+  [EVENT_TYPES[3]]: [],
+  [EVENT_TYPES[4]]: [{typeOffer: `train`, title: `Book tickets`, cost: 40}, {typeOffer: `comfort`, title: `Switch to comfort`, cost: 20}, {typeOffer: `taxi`, title: `order Uber`, cost: 30}],
+  [EVENT_TYPES[5]]: [{typeOffer: `luggage`, title: `Add luggage`, cost: 20}, {typeOffer: `meal`, title: `Lunch in city`, cost: 70}, {typeOffer: `taxi`, title: `order Uber`, cost: 30}, {typeOffer: `comfort`, title: `Switch to comfort`, cost: 50}, {typeOffer: `meal`, title: `Add breakfast`, cost: 40}],
+  [EVENT_TYPES[6]]: [],
+  [EVENT_TYPES[7]]: [{typeOffer: `train`, title: `Book tickets`, cost: 40}, {typeOffer: `comfort`, title: `Switch to comfort`, cost: 50}, {typeOffer: `taxi`, title: `order Uber`, cost: 30}, {typeOffer: `comfort`, title: `Switch to comfort`, cost: 50}, {typeOffer: `meal`, title: `Add breakfast`, cost: 40}],
+  [EVENT_TYPES[8]]: [{typeOffer: `taxi`, title: `order Uber`, cost: 30}, {typeOffer: `comfort`, title: `Switch to comfort`, cost: 50}, {typeOffer: `luggage`, title: `Add luggage`, cost: 20}, {typeOffer: `taxi`, title: `order Uber`, cost: 30}, {typeOffer: `taxi`, title: `Rent a car`, cost: 20}],
+  [EVENT_TYPES[9]]: [{typeOffer: `train`, title: `Book tickets`, cost: 40}]
 };

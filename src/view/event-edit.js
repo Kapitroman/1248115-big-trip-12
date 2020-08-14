@@ -1,18 +1,130 @@
-import {getFormatEditTime} from "./../utils.js";
+import {createElement, getFormatEditTime} from "./../utils.js";
 import {DESTINATIONS} from "./../const.js";
+import {typesOffers} from "../mock/types-offers.js";
+import {descriptionDestinations} from "../mock/destination.js";
 
 const getDestinations = (listDestinations) => {
 
   return listDestinations.map((item) => `<option value="${item}"></option>`).join(``);
 };
 
-export const createEventEditTemplate = (event = {}) => {
-  const {
-    type = `Bus`,
-    destination = ``,
-    date = [new Date(), new Date()],
-    cost = 0,
-  } = event;
+const BLANK_EVENT = {
+  type: `Bus`,
+  destination: ``,
+  date: [new Date(), new Date()],
+  cost: 0,
+  action: `add`,
+  offers: typesOffers[`Bus`],
+  isFavorite: false
+};
+
+const createEventEditActionTemplate = (action) => {
+  if (action === `edit`) {
+
+    return (
+      `<button class="event__reset-btn" type="reset">Delete</button>
+
+      <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
+      <label class="event__favorite-btn" for="event-favorite-1">
+        <span class="visually-hidden">Add to favorite</span>
+        <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
+          <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+        </svg>
+      </label>
+
+      <button class="event__rollup-btn" type="button">
+        <span class="visually-hidden">Open event</span>
+      </button>`
+    );
+  } else {
+
+    return (
+      `<button class="event__reset-btn" type="reset">Cancel</button>`
+    );
+  }
+};
+
+const createEventDetailsTemplate = (event) => {
+
+  const {type} = event;
+
+  if (typesOffers[type].length !== 0 ||
+    descriptionDestinations[event[`destination`]][`description`] ||
+    descriptionDestinations[event[`destination`]][`photos`]) {
+
+    return (
+      `<section class="event__details">
+      ${createEventOffersTemplate(event)}
+      ${createEventDestinationTemplate(event)}
+
+    </section>`
+    );
+  } else {
+
+    return ``;
+  }
+};
+
+const createEventOffersTemplate = (event) => {
+
+  const {type} = event;
+
+  if (typesOffers[type].length !== 0) {
+
+    return (
+      `<section class="event__section  event__section--offers">
+        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+
+        <div class="event__available-offers">
+          ${createEventOfferItemsTemplate(typesOffers[type])}
+        </div>
+      </section>`
+    );
+  } else {
+
+    return ``;
+  }
+};
+
+const createEventOfferItemsTemplate = (arrayTypeOffer) => {
+
+  return arrayTypeOffer.map((item) =>
+    `<div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${item[`typeOffer`]}-1" type="checkbox" name="event-offer-${item[`typeOffer`]}" checked>
+      <label class="event__offer-label" for="event-offer-${item[`typeOffer`]}-1">
+        <span class="event__offer-title">${item[`title`]}</span>
+        &plus;
+        &euro;&nbsp;<span class="event__offer-price">${item[`cost`]}</span>
+      </label>
+    </div>`).join(``);
+};
+
+const createEventDestinationTemplate = (event) => {
+  const {destination} = event;
+
+  if (descriptionDestinations[event[`destination`]][`description`] || descriptionDestinations[event[`destination`]][`photos`]) {
+
+    return (
+      `<section class="event__section  event__section--destination">
+        <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+        <p class="event__destination-description">${descriptionDestinations[destination][`description`]}</p>
+
+        <div class="event__photos-container">
+          <div class="event__photos-tape">
+            ${descriptionDestinations[destination][`photos`]}
+          </div>
+        </div>
+      </section>`
+    );
+  } else {
+
+    return ``;
+  }
+};
+
+const createEventEditTemplate = (event) => {
+  const {type, destination, date, cost, action} = event;
+
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
       <header class="event__header">
@@ -88,7 +200,7 @@ export const createEventEditTemplate = (event = {}) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type} to
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value=${destination} list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
           <datalist id="destination-list-1">
             ${getDestinations(DESTINATIONS)}
           </datalist>
@@ -115,11 +227,35 @@ export const createEventEditTemplate = (event = {}) => {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Cancel</button>
+        ${createEventEditActionTemplate(action)}
       </header>
-      <section class="event__details">
 
-      </section>
+      ${createEventDetailsTemplate(event)}
+
     </form>`
   );
 };
+
+export default class EventEdit {
+  constructor(event = BLANK_EVENT) {
+    this._event = event;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventEditTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

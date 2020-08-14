@@ -1,7 +1,25 @@
-import {getShortTime, getFullTime, durationTime} from "./../utils.js";
+import {createElement, getShortTime, getFullTime, durationTime} from "./../utils.js";
 
-export const createTripEventsItemTemplate = (event) => {
-  const {type, destination, date, cost} = event;
+const createEventOfferTemplate = (offer) => {
+  return (
+    `<li class="event__offer">
+      <span class="event__offer-title">${offer.title}</span>
+      &plus;
+      &euro;&nbsp;<span class="event__offer-price">${offer.cost}</span>
+    </li>`
+  );
+};
+
+const createTripEventsItemTemplate = (event) => {
+  const {type, destination, date, offers, cost} = event;
+
+  const renderOffers = () => {
+    const listOffers = [];
+    for (let y = 0; y < Math.min(offers.length, 3); y++) {
+      listOffers.push(createEventOfferTemplate(offers[y]));
+    }
+    return listOffers.join(``);
+  };
 
   return (
     `<li class="trip-events__item">
@@ -26,7 +44,7 @@ export const createTripEventsItemTemplate = (event) => {
 
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-
+          ${renderOffers()}
         </ul>
 
         <button class="event__rollup-btn" type="button">
@@ -36,3 +54,27 @@ export const createTripEventsItemTemplate = (event) => {
     </li>`
   );
 };
+
+export default class TripEventsItem {
+  constructor(event) {
+    this._event = event;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripEventsItemTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
