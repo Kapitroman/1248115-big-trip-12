@@ -2,6 +2,7 @@ import TripInfoView from "./view/trip-info.js";
 import TripTitleView from "./view/trip-title.js";
 import TripTabsView from "./view/trip-tabs.js";
 import TripFiltersView from "./view/trip-filters.js";
+import NoEventView from "./view/no-event.js";
 import TripSortView from "./view/trip-sort.js";
 import EventEditView from "./view/event-edit.js";
 import TripDaysView from "./view/trip-days.js";
@@ -17,7 +18,6 @@ const tripMainElement = document.querySelector(`.trip-main`);
 
 const tpipInfoComponent = new TripInfoView(events);
 render(tripMainElement, tpipInfoComponent.getElement(), RenderPosition.AFTERBEGIN);
-render(tpipInfoComponent.getElement(), new TripTitleView(events).getElement(), RenderPosition.AFTERBEGIN);
 
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
 const switchTripViewElement = tripControlsElement.querySelectorAll(`h2`)[0];
@@ -28,10 +28,9 @@ render(tripControlsElement, new TripFiltersView().getElement(), RenderPosition.B
 const pageMainElement = document.querySelector(`.page-main`);
 const tripEventsElement = pageMainElement.querySelector(`.trip-events`);
 
-render(tripEventsElement, new TripSortView().getElement(), RenderPosition.BEFOREEND);
-
-const tripDaysComponent = new TripDaysView();
-render(tripEventsElement, tripDaysComponent.getElement(), RenderPosition.BEFOREEND);
+if (events.length === 0) {
+  render(tripEventsElement, new NoEventView().getElement(), RenderPosition.BEFOREEND);
+}
 
 const renderEvent = (eventListElement, event) => {
   const tripEventsItemComponent = new TripEventsItemView(event);
@@ -45,40 +44,65 @@ const renderEvent = (eventListElement, event) => {
     eventListElement.replaceChild(tripEventsItemComponent.getElement(), eventEditComponent.getElement());
   };
 
+  const onEscKeyDown = (evt) => {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      evt.preventDefault();
+      replaceEditToEvent();
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
+  };
+
   tripEventsItemComponent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
     replaceEventToEdit();
+    document.addEventListener(`keydown`, onEscKeyDown);
   });
 
   eventEditComponent.getElement().addEventListener(`submit`, (evt) => {
     evt.preventDefault();
     replaceEditToEvent();
+    document.removeEventListener(`keydown`, onEscKeyDown);
   });
 
   render(eventListElement, tripEventsItemComponent.getElement(), RenderPosition.BEFOREEND);
 };
 
-let currentDay = events[0].date[0].getDate();
-let currentDate = events[0].date[0];
-let countDay = 1;
-let index = 0;
-let i;
-
-do {
-  const dayComponent = new DayView(currentDate, countDay);
-  render(tripDaysComponent.getElement(), dayComponent.getElement(), RenderPosition.BEFOREEND);
-
-  const tripEventsListElement = dayComponent.getElement().querySelector(`.trip-events__list`);
-
-  for (i = index; i < events.length; i++) {
-
-    if (events[i].date[0].getDate() === currentDay) {
-      renderEvent(tripEventsListElement, events[i]);
-    } else {
-      currentDay = events[i].date[0].getDate();
-      currentDate = events[i].date[0];
-      countDay++;
-      index = i;
-      break;
-    }
+const renderBoardEvents = (boardEvents) => {
+  if (boardEvents.length === 0) {
+    render(tripEventsElement, new NoEventView().getElement(), RenderPosition.BEFOREEND);
+    return;
   }
-} while (i < events.length);
+
+  render(tpipInfoComponent.getElement(), new TripTitleView(boardEvents).getElement(), RenderPosition.AFTERBEGIN);
+  render(tripEventsElement, new TripSortView().getElement(), RenderPosition.BEFOREEND);
+
+  const tripDaysComponent = new TripDaysView();
+  render(tripEventsElement, tripDaysComponent.getElement(), RenderPosition.BEFOREEND);
+
+  let currentDay = boardEvents[0].date[0].getDate();
+  let currentDate = boardEvents[0].date[0];
+  let countDay = 1;
+  let index = 0;
+  let i;
+
+  do {
+    const dayComponent = new DayView(currentDate, countDay);
+    render(tripDaysComponent.getElement(), dayComponent.getElement(), RenderPosition.BEFOREEND);
+
+    const tripEventsListElement = dayComponent.getElement().querySelector(`.trip-events__list`);
+
+    for (i = index; i < boardEvents.length; i++) {
+
+      if (boardEvents[i].date[0].getDate() === currentDay) {
+        renderEvent(tripEventsListElement, boardEvents[i]);
+      } else {
+        currentDay = boardEvents[i].date[0].getDate();
+        currentDate = boardEvents[i].date[0];
+        countDay++;
+        index = i;
+        break;
+      }
+    }
+  } while (i < boardEvents.length);
+};
+
+renderBoardEvents(events);
