@@ -1,4 +1,5 @@
 import {EVENT_TYPES, DESTINATIONS} from "../const.js";
+import {typesOffers} from "./types-offers.js";
 import {getRandomInteger} from "../utils.js";
 
 const getEventType = () => {
@@ -27,22 +28,20 @@ const generateEventDate = () => {
   return eventData;
 };
 
-const generateOffers = () => {
-  const countOffers = getRandomInteger(0, 5);
-  const titles = [`Order Uber`, `Add luggage`, `Rent a car`, `Add breakfast`, `Book tickets`, `Lunch in city`, `Switch to comfort`];
-  const offers = new Array(countOffers).fill().map(() => ({title: titles[getRandomInteger(0, titles.length - 1)], cost: getRandomInteger(5, 100)}));
+const generateOffers = (type) => {
 
-  return offers;
+  return typesOffers[type].filter(() => Math.random() > 0.5);
 };
 
 export const generateEvent = () => {
-
+  const eventType = getEventType();
   return {
-    type: getEventType(),
+    type: eventType,
     destination: generateDestination(),
     date: generateEventDate(),
     cost: getRandomInteger(20, 1000),
-    offers: generateOffers(),
+    offers: generateOffers(eventType),
+    action: `edit`,
     isFavorite: Math.random() > 0.5
   };
 };

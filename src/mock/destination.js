@@ -1,6 +1,7 @@
 import {getRandomInteger} from "../utils.js";
+import {DESTINATIONS} from "../const.js";
 
-export const getDescription = () => {
+const getDescription = () => {
 
   const description = [
     `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
@@ -25,7 +26,7 @@ export const getDescription = () => {
   return listDescription.join(` `);
 };
 
-export const getPhotos = () => {
+const getPhotos = () => {
   const randomCount = getRandomInteger(1, 5);
   const listPhotos = [];
   for (let i = 0; i < randomCount; i++) {
@@ -33,4 +34,11 @@ export const getPhotos = () => {
   }
 
   return listPhotos.join(` `);
+};
+
+export const descriptionDestinations = {
+  [DESTINATIONS[0]]: {description: getDescription(), photos: getPhotos()},
+  [DESTINATIONS[1]]: {description: null, photos: null},
+  [DESTINATIONS[2]]: {description: getDescription(), photos: getPhotos()},
+  [DESTINATIONS[3]]: {description: getDescription(), photos: getPhotos()}
 };

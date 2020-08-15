@@ -1,6 +1,6 @@
-import {getFormatDate} from "./../utils.js";
+import {createElement, getFormatDate} from "./../utils.js";
 
-export const createTripTitleTemplate = (events) => {
+const createTripTitleTemplate = (events) => {
   return (
     `<div class="trip-info__main">
       <h1 class="trip-info__title">${events[0].destination} &mdash; ... &mdash; ${events[events.length - 1].destination} </h1>
@@ -8,3 +8,27 @@ export const createTripTitleTemplate = (events) => {
     </div>`
   );
 };
+
+export default class TripTitle {
+  constructor(events) {
+    this._events = events;
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripTitleTemplate(this._events);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
