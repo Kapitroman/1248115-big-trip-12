@@ -35,7 +35,7 @@ const createTripSortTemplate = () => {
   );
 };
 
-export default class TripTabs {
+export default class TripSort {
   constructor() {
     this._element = null;
   }
