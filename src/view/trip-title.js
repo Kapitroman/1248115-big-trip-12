@@ -1,4 +1,5 @@
-import {createElement, getFormatDate} from "./../utils.js";
+import {getFormatDate} from "./../utils/event.js";
+import AbstractView from "./abstract.js";
 
 const createTripTitleTemplate = (events) => {
   return (
@@ -9,26 +10,13 @@ const createTripTitleTemplate = (events) => {
   );
 };
 
-export default class TripTitle {
+export default class TripTitle extends AbstractView {
   constructor(events) {
+    super();
     this._events = events;
-
-    this._element = null;
   }
 
   getTemplate() {
     return createTripTitleTemplate(this._events);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
