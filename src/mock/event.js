@@ -1,6 +1,6 @@
 import {EVENT_TYPES, DESTINATIONS} from "../const.js";
 import {typesOffers} from "./types-offers.js";
-import {getRandomInteger} from "../utils.js";
+import {getRandomInteger} from "../utils/common.js";
 
 const getEventType = () => {
   const randomIndex = getRandomInteger(0, EVENT_TYPES.length - 1);

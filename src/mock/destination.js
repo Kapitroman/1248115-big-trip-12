@@ -1,4 +1,4 @@
-import {getRandomInteger} from "../utils.js";
+import {getRandomInteger} from "../utils/common.js";
 import {DESTINATIONS} from "../const.js";
 
 const getDescription = () => {

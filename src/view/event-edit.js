@@ -1,7 +1,8 @@
-import {createElement, getFormatEditTime} from "./../utils.js";
+import {getFormatEditTime} from "./../utils/event.js";
 import {DESTINATIONS} from "./../const.js";
 import {typesOffers} from "../mock/types-offers.js";
 import {descriptionDestinations} from "../mock/destination.js";
+import AbstractView from "./abstract.js";
 
 const getDestinations = (listDestinations) => {
 
@@ -131,7 +132,7 @@ const createEventEditTemplate = (event) => {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event ${type} icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event ${type.toLowerCase()} icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -236,26 +237,24 @@ const createEventEditTemplate = (event) => {
   );
 };
 
-export default class EventEdit {
+export default class EventEdit extends AbstractView {
   constructor(event = BLANK_EVENT) {
+    super();
     this._event = event;
-
-    this._element = null;
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
   }
 
   getTemplate() {
     return createEventEditTemplate(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit();
   }
 
-  removeElement() {
-    this._element = null;
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().addEventListener(`submit`, this._formSubmitHandler);
   }
 }
