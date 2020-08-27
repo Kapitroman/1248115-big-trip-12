@@ -68,3 +68,11 @@ export const getFormatEditTime = (date) => {
 
   return `${shortDateTime[0]}/${shortDateTime[1]}/${shortDateTime[2]} ${shortDateTime[3]}:${shortDateTime[4]}`;
 };
+
+export const sortTime = (eventA, eventB) => {
+  return (eventB.date[1] - eventB.date[0]) - (eventA.date[1] - eventA.date[0]);
+};
+
+export const sortPrice = (eventA, eventB) => {
+  return eventB.cost - eventA.cost;
+};
