@@ -47,7 +47,6 @@ export default class Trip {
     }
 
     this._sortEvents(sortType);
-    this._clearTripEvents();
 
     if (sortType === SortType.DEFAULT) {
       this._renderTripEvents();
@@ -104,6 +103,7 @@ export default class Trip {
 
   _renderTripDays() {
     render(this._tripContainer, this._tripDaysComponent, RenderPosition.BEFOREEND);
+    this._clearTripEvents();
   }
 
   _renderTripEventsSort() {
