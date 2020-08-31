@@ -33,9 +33,12 @@ const generateOffers = (type) => {
   return typesOffers[type].filter(() => Math.random() > 0.5);
 };
 
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
 export const generateEvent = () => {
   const eventType = getEventType();
   return {
+    id: generateId(),
     type: eventType,
     destination: generateDestination(),
     date: generateEventDate(),
