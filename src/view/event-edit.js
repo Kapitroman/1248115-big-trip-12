@@ -1,5 +1,5 @@
 import {getFormatEditTime} from "./../utils/event.js";
-import {DESTINATIONS} from "./../const.js";
+import {DESTINATIONS, PLACEHOLDER} from "./../const.js";
 import {typesOffers} from "../mock/types-offers.js";
 import {descriptionDestinations} from "../mock/destination.js";
 import AbstractView from "./abstract.js";
@@ -207,7 +207,7 @@ const createEventEditTemplate = (event) => {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${type} to
+            ${type} ${PLACEHOLDER[type]}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
           <datalist id="destination-list-1">

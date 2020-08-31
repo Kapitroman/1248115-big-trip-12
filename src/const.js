@@ -8,3 +8,16 @@ export const SortType = {
 export const DAY_IN_MS = 24 * 3600 * 1000;
 export const HOUR_IN_MS = 3600 * 1000;
 export const MINUTE_IN_MS = 60 * 1000;
+export const PLACEHOLDER = {
+  [EVENT_TYPES[0]]: `to`,
+  [EVENT_TYPES[1]]: `to`,
+  [EVENT_TYPES[2]]: `to`,
+  [EVENT_TYPES[3]]: `to`,
+  [EVENT_TYPES[4]]: `to`,
+  [EVENT_TYPES[5]]: `to`,
+  [EVENT_TYPES[6]]: `to`,
+  [EVENT_TYPES[7]]: `in`,
+  [EVENT_TYPES[8]]: `in`,
+  [EVENT_TYPES[9]]: `in`
+};
+
