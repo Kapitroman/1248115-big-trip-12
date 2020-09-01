@@ -18,10 +18,10 @@ const BLANK_EVENT = {
   isFavorite: false
 };
 
-const createEventEditActionTemplate = (id, isFavorite) => {
+const createEventEditActionTemplate = (id, isCheckFavorite) => {
 
   const checked = () => {
-    if (isFavorite) {
+    if (isCheckFavorite) {
       return `checked`;
     }
     return ``;
@@ -44,18 +44,18 @@ const createEventEditActionTemplate = (id, isFavorite) => {
   );
 };
 
-const createEventDetailsTemplate = (event) => {
+const createEventDetailsTemplate = (data) => {
 
-  const {type} = event;
+  const {type} = data;
 
   if (typesOffers[type].length !== 0 ||
-    descriptionDestinations[event[`destination`]][`description`] ||
-    descriptionDestinations[event[`destination`]][`photos`]) {
+    descriptionDestinations[data[`destination`]][`description`] ||
+    descriptionDestinations[data[`destination`]][`photos`]) {
 
     return (
       `<section class="event__details">
-      ${createEventOffersTemplate(event)}
-      ${createEventDestinationTemplate(event)}
+      ${createEventOffersTemplate(data)}
+      ${createEventDestinationTemplate(data)}
 
     </section>`
     );
@@ -65,9 +65,9 @@ const createEventDetailsTemplate = (event) => {
   }
 };
 
-const createEventOffersTemplate = (event) => {
+const createEventOffersTemplate = (data) => {
 
-  const {type, offers} = event;
+  const {type, offers} = data;
 
   if (typesOffers[type].length !== 0) {
 
@@ -106,10 +106,10 @@ const createEventOfferItemsTemplate = (arrayTypeOffer, eventOffers) => {
     </div>`).join(``);
 };
 
-const createEventDestinationTemplate = (event) => {
-  const {destination} = event;
+const createEventDestinationTemplate = (data) => {
+  const {destination} = data;
 
-  if (descriptionDestinations[event[`destination`]][`description`] || descriptionDestinations[event[`destination`]][`photos`]) {
+  if (descriptionDestinations[data[`destination`]][`description`] || descriptionDestinations[data[`destination`]][`photos`]) {
 
     return (
       `<section class="event__section  event__section--destination">
@@ -129,8 +129,8 @@ const createEventDestinationTemplate = (event) => {
   }
 };
 
-const createEventEditTemplate = (event) => {
-  const {type, destination, date, cost, id, isFavorite} = event;
+const createEventEditTemplate = (data) => {
+  const {type, destination, date, cost, id, isCheckFavorite} = data;
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -234,10 +234,10 @@ const createEventEditTemplate = (event) => {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        ${createEventEditActionTemplate(id, isFavorite)}
+        ${createEventEditActionTemplate(id, isCheckFavorite)}
       </header>
 
-      ${createEventDetailsTemplate(event)}
+      ${createEventDetailsTemplate(data)}
 
     </form>`
   );
@@ -246,13 +246,14 @@ const createEventEditTemplate = (event) => {
 export default class EventEdit extends AbstractView {
   constructor(event = BLANK_EVENT) {
     super();
-    this._event = event;
+    this._data = EventEdit.parseEventToData(event);
+
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._event);
+    return createEventEditTemplate(this._data);
   }
 
   _favoriteClickHandler(evt) {
@@ -262,7 +263,7 @@ export default class EventEdit extends AbstractView {
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit(this._event);
+    this._callback.formSubmit(this._data);
   }
 
   setFavoriteClickHandler(callback) {
@@ -274,42 +275,27 @@ export default class EventEdit extends AbstractView {
     this._callback.formSubmit = callback;
     this.getElement().addEventListener(`submit`, this._formSubmitHandler);
   }
-/*
-  static parseTaskToData(task) {
+
+  static parseEventToData(event) {
     return Object.assign(
         {},
-        task,
+        event,
         {
-          isCheckFavorite: event.isFavorite !== null,
-          isOffers: isTaskRepeating(task.repeating)
+          isCheckFavorite: event.isFavorite,
         }
     );
   }
 
-  static parseDataToTask(data) {
+  static parseDataToEvent(data) {
     data = Object.assign({}, data);
 
-    if (!data.isDueDate) {
-      data.dueDate = null;
+    if (data.isCheckFavorite) {
+      data.isFavorite = true;
     }
 
-    if (!data.isRepeating) {
-      data.repeating = {
-        mo: false,
-        tu: false,
-        we: false,
-        th: false,
-        fr: false,
-        sa: false,
-        su: false
-      };
-    }
-
-    delete data.isDueDate;
-    delete data.isRepeating;
+    delete data.isCheckFavorite;
 
     return data;
   }
-*/
 }
 
