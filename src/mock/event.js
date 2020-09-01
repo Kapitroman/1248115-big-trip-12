@@ -44,7 +44,6 @@ export const generateEvent = () => {
     date: generateEventDate(),
     cost: getRandomInteger(20, 1000),
     offers: generateOffers(eventType),
-    action: `edit`,
     isFavorite: Math.random() > 0.5
   };
 };
