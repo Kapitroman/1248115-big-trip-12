@@ -17,6 +17,7 @@ export default class Trip {
     this._tripDaysComponent = new TripDaysView();
     this._noEventComponent = new NoEventView();
 
+    this._handleModeChange = this._handleModeChange.bind(this);
     this._handleEventChange = this._handleEventChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
@@ -57,6 +58,12 @@ export default class Trip {
     this._renderTripEventsSort();
   }
 
+  _handleModeChange() {
+    Object
+      .values(this._eventPresenter)
+      .forEach((presenter) => presenter.resetView());
+  }
+
   _handleEventChange(updatedEvent) {
     this._tripEvents = updateItem(this._tripEvents, updatedEvent);
     this._sourcedTripEvents = updateItem(this._sourcedTripEvents, updatedEvent);
@@ -64,7 +71,7 @@ export default class Trip {
   }
 
   _renderEvent(eventListElement, event) {
-    const eventPresenter = new EventPresenter(eventListElement, this._handleEventChange);
+    const eventPresenter = new EventPresenter(eventListElement, this._handleEventChange, this._handleModeChange);
     eventPresenter.init(event);
     this._eventPresenter[event.id] = eventPresenter;
   }
@@ -75,9 +82,6 @@ export default class Trip {
 
   _clearTripEvents() {
     this._tripDaysComponent.getElement().innerHTML = ``;
-    //Object
-    //  .values(this._eventPresenter)
-    //  .forEach((presenter) => presenter.destroy());
     this._eventPresenter = {};
   }
 
@@ -143,5 +147,4 @@ export default class Trip {
     this._renderTripDays();
     this._renderTripEvents();
   }
-
 }

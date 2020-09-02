@@ -2,7 +2,7 @@ import {getFormatEditTime} from "./../utils/event.js";
 import {DESTINATIONS, PLACEHOLDER} from "./../const.js";
 import {typesOffers} from "../mock/types-offers.js";
 import {descriptionDestinations} from "../mock/destination.js";
-import AbstractView from "./abstract.js";
+import SmartView from "./smart.js";
 
 const getDestinations = (listDestinations) => {
 
@@ -243,12 +243,11 @@ const createEventEditTemplate = (data) => {
   );
 };
 
-export default class EventEdit extends AbstractView {
+export default class EventEdit extends SmartView {
   constructor(event = BLANK_EVENT) {
     super();
     this._data = EventEdit.parseEventToData(event);
 
-    //this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._offerInputHandler = this._offerInputHandler.bind(this);
     this._typeInputHandler = this._typeInputHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
@@ -259,44 +258,18 @@ export default class EventEdit extends AbstractView {
     this._setInnerHandlers();
   }
 
+  reset(event) {
+    this.updateData(
+        EventEdit.parseEventToData(event)
+    );
+  }
+
   getTemplate() {
     return createEventEditTemplate(this._data);
   }
 
-  updateData(update, justDataUpdating) {
-    if (!update) {
-      return;
-    }
-
-    this._data = Object.assign(
-        {},
-        this._data,
-        update
-    );
-
-    if (justDataUpdating) {
-      return;
-    }
-
-    this.updateElement();
-  }
-
-  updateElement() {
-    let prevElement = this.getElement();
-    const parent = prevElement.parentElement;
-    this.removeElement();
-
-    const newElement = this.getElement();
-
-    parent.replaceChild(newElement, prevElement);
-    prevElement = null;
-
-    this.restoreHandlers();
-  }
-
   restoreHandlers() {
     this._setInnerHandlers();
-    //this.setFavoriteClickHandler(this._callback.favoriteClick);
     this.setFormSubmitHandler(this._callback.formSubmit);
   }
 
@@ -304,20 +277,12 @@ export default class EventEdit extends AbstractView {
     evt.preventDefault();
 
     this.updateData(
-
         {
           isFavorite: !this._data.isFavorite,
           isCheckFavorite: !this._data.isCheckFavorite
         }
-
     );
-
-
   }
-
-
-
-
 
   _typeInputHandler(evt) {
     evt.preventDefault();
@@ -342,21 +307,18 @@ export default class EventEdit extends AbstractView {
 
   _offerInputHandler(evt) {
     evt.preventDefault();
-    if (evt.target.classList.contains(`event__offer-checkbox`)) {
     let title = evt.target.dataset.title;
     const listTypesOffers = typesOffers[this._data.type];
     let listOffers = this._data.offers;
     let index = listTypesOffers.findIndex((item) => item[`title`] === title);
     if (evt.target.checked) {
       listOffers.push(listTypesOffers[index]);
-    }
-    else {
+    } else {
       listOffers = listOffers.filter((item) => item[`title`] !== title);
     }
     this.updateData({
       offers: listOffers
     });
-  }
   }
 
   _setInnerHandlers() {
@@ -367,12 +329,7 @@ export default class EventEdit extends AbstractView {
     this.getElement()
       .querySelector(`.event__input--price`)
       .addEventListener(`input`, this._priceInputHandler);
-/*
-    const radioTypes = this.getElement().querySelectorAll(`[name="event-type"]`);
-    for (let i = 0; i < radioTypes.length; i++) {
-      radioTypes[i].addEventListener(`change`, this._typeInputHandler);
-    }
-*/
+
     this.getElement()
       .querySelector(`.event__type-list`)
       .addEventListener(`change`, this._typeInputHandler);
@@ -388,19 +345,6 @@ export default class EventEdit extends AbstractView {
       .addEventListener(`click`, this._favoriteInputHandler);
 
   }
-/*
-  _favoriteClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.favoriteClick();
-  }
-
-
-  setFavoriteClickHandler(callback) {
-    this._callback.favoriteClick = callback;
-    this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, this._favoriteClickHandler);
-  }
-
-*/
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
@@ -425,13 +369,8 @@ export default class EventEdit extends AbstractView {
   static parseDataToEvent(data) {
     data = Object.assign({}, data);
 
-   // if (data.isCheckFavorite) {
-   //   data.isFavorite = true;
-   // }
-
     delete data.isCheckFavorite;
 
     return data;
   }
 }
-

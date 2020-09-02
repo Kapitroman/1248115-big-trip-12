@@ -2,15 +2,21 @@ import EventEditView from "../view/event-edit.js";
 import TripEventsItemView from "../view/trip-events-item.js";
 import {render, RenderPosition, replace, remove} from "../utils/render.js";
 
+const Mode = {
+  DEFAULT: `DEFAULT`,
+  EDITING: `EDITING`
+};
+
 export default class Event {
-  constructor(eventListContainer, changeData) {
+  constructor(eventListContainer, changeData, changeMode) {
     this._eventListContainer = eventListContainer;
     this._changeData = changeData;
+    this._changeMode = changeMode;
 
     this._tripEventsItemComponent = null;
     this._eventEditComponent = null;
+    this._mode = Mode.DEFAULT;
 
-    //this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._handleEditClick = this._handleEditClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
@@ -25,7 +31,6 @@ export default class Event {
     this._tripEventsItemComponent = new TripEventsItemView(event);
     this._eventEditComponent = new EventEditView(event);
 
-    //this._eventEditComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._tripEventsItemComponent.setEditClickHandler(this._handleEditClick);
     this._eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
 
@@ -34,11 +39,11 @@ export default class Event {
       return;
     }
 
-    if (this._eventListContainer.contains(prevTripEventsItemComponent.getElement())) {
+    if (this._mode === Mode.DEFAULT) {
       replace(this._tripEventsItemComponent, prevTripEventsItemComponent);
     }
 
-    if (this._eventListContainer.contains(prevEventEditComponent.getElement())) {
+    if (this._mode === Mode.EDITING) {
       replace(this._eventEditComponent, prevEventEditComponent);
     }
 
@@ -51,36 +56,32 @@ export default class Event {
     remove(this._eventEditComponent);
   }
 
-  _replaceEventToEdit() {
-    replace(this._eventEditComponent, this._tripEventsItemComponent);
-    document.addEventListener(`keydown`, this._onEscKeyDown);
-  };
-
-  _replaceEditToEvent () {
-    replace(this._tripEventsItemComponent, this._eventEditComponent);
-    document.removeEventListener(`keydown`, this._onEscKeyDown);
-  };
-
-  _onEscKeyDown (evt) {
-    if (evt.key === `Escape` || evt.key === `Esc`) {
-      evt.preventDefault();
+  resetView() {
+    if (this._mode !== Mode.DEFAULT) {
       this._replaceEditToEvent();
     }
   }
 
-/*
-  _handleFavoriteClick() {
-    this._changeData(
-        Object.assign(
-            {},
-            this._event,
-            {
-              isFavorite: !this._event.isFavorite
-            }
-        )
-    );
+  _replaceEventToEdit() {
+    replace(this._eventEditComponent, this._tripEventsItemComponent);
+    document.addEventListener(`keydown`, this._onEscKeyDown);
+    this._changeMode();
+    this._mode = Mode.EDITING;
   }
-*/
+
+  _replaceEditToEvent() {
+    replace(this._tripEventsItemComponent, this._eventEditComponent);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
+    this._mode = Mode.DEFAULT;
+  }
+
+  _onEscKeyDown(evt) {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      evt.preventDefault();
+      this._eventEditComponent.reset(this._event);
+      this._replaceEditToEvent();
+    }
+  }
 
   _handleEditClick() {
     this._replaceEventToEdit();
