@@ -16,11 +16,11 @@ const createTripEventsItemTemplate = (event) => {
   const {type, destination, date, offers, cost} = event;
 
   const renderOffers = () => {
-    const listOffers = [];
+    const listEventOffers = [];
     for (let y = 0; y < Math.min(offers.length, 3); y++) {
-      listOffers.push(createEventOfferTemplate(offers[y]));
+      listEventOffers.push(createEventOfferTemplate(offers[y]));
     }
-    return listOffers.join(``);
+    return listEventOffers.join(``);
   };
 
   return (

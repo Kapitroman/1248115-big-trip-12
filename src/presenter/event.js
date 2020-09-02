@@ -10,7 +10,7 @@ export default class Event {
     this._tripEventsItemComponent = null;
     this._eventEditComponent = null;
 
-    this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
+    //this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._handleEditClick = this._handleEditClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
@@ -25,7 +25,7 @@ export default class Event {
     this._tripEventsItemComponent = new TripEventsItemView(event);
     this._eventEditComponent = new EventEditView(event);
 
-    this._eventEditComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    //this._eventEditComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._tripEventsItemComponent.setEditClickHandler(this._handleEditClick);
     this._eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
 
@@ -68,6 +68,7 @@ export default class Event {
     }
   }
 
+/*
   _handleFavoriteClick() {
     this._changeData(
         Object.assign(
@@ -79,6 +80,7 @@ export default class Event {
         )
     );
   }
+*/
 
   _handleEditClick() {
     this._replaceEventToEdit();
