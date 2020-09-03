@@ -1,6 +1,6 @@
 import {EVENT_TYPES, DESTINATIONS} from "../const.js";
 import {typesOffers} from "./types-offers.js";
-import {getRandomInteger} from "../utils/common.js";
+import {getRandomInteger, generateId} from "../utils/common.js";
 
 const getEventType = () => {
   const randomIndex = getRandomInteger(0, EVENT_TYPES.length - 1);
@@ -36,12 +36,12 @@ const generateOffers = (type) => {
 export const generateEvent = () => {
   const eventType = getEventType();
   return {
+    id: generateId(),
     type: eventType,
     destination: generateDestination(),
     date: generateEventDate(),
     cost: getRandomInteger(20, 1000),
     offers: generateOffers(eventType),
-    action: `edit`,
     isFavorite: Math.random() > 0.5
   };
 };

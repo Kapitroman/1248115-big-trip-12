@@ -1,8 +1,8 @@
 import {getFormatEditTime} from "./../utils/event.js";
-import {DESTINATIONS} from "./../const.js";
+import {DESTINATIONS, PLACEHOLDER} from "./../const.js";
 import {typesOffers} from "../mock/types-offers.js";
 import {descriptionDestinations} from "../mock/destination.js";
-import AbstractView from "./abstract.js";
+import SmartView from "./smart.js";
 
 const getDestinations = (listDestinations) => {
 
@@ -14,49 +14,48 @@ const BLANK_EVENT = {
   destination: ``,
   date: [new Date(), new Date()],
   cost: 0,
-  action: `add`,
   offers: typesOffers[`Bus`],
   isFavorite: false
 };
 
-const createEventEditActionTemplate = (action) => {
-  if (action === `edit`) {
+const createEventEditActionTemplate = (id, isCheckFavorite) => {
 
-    return (
-      `<button class="event__reset-btn" type="reset">Delete</button>
+  const checked = () => {
+    if (isCheckFavorite) {
+      return `checked`;
+    }
+    return ``;
+  };
 
-      <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
-      <label class="event__favorite-btn" for="event-favorite-1">
-        <span class="visually-hidden">Add to favorite</span>
-        <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
-          <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
-        </svg>
-      </label>
+  return (
+    `<button class="event__reset-btn" type="reset">Delete</button>
 
-      <button class="event__rollup-btn" type="button">
-        <span class="visually-hidden">Open event</span>
-      </button>`
-    );
-  } else {
+    <input id="event-favorite-${id}" class="event__favorite-checkbox visually-hidden" type="checkbox" name="event-favorite" ${checked()}>
+    <label class="event__favorite-btn" for="event-favorite-${id}">
+      <span class="visually-hidden">Add to favorite</span>
+      <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
+        <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+      </svg>
+    </label>
 
-    return (
-      `<button class="event__reset-btn" type="reset">Cancel</button>`
-    );
-  }
+    <button class="event__rollup-btn" type="button">
+      <span class="visually-hidden">Open event</span>
+    </button>`
+  );
 };
 
-const createEventDetailsTemplate = (event) => {
+const createEventDetailsTemplate = (data) => {
 
-  const {type} = event;
+  const {type} = data;
 
   if (typesOffers[type].length !== 0 ||
-    descriptionDestinations[event[`destination`]][`description`] ||
-    descriptionDestinations[event[`destination`]][`photos`]) {
+    descriptionDestinations[data[`destination`]][`description`] ||
+    descriptionDestinations[data[`destination`]][`photos`]) {
 
     return (
       `<section class="event__details">
-      ${createEventOffersTemplate(event)}
-      ${createEventDestinationTemplate(event)}
+      ${createEventOffersTemplate(data)}
+      ${createEventDestinationTemplate(data)}
 
     </section>`
     );
@@ -66,9 +65,9 @@ const createEventDetailsTemplate = (event) => {
   }
 };
 
-const createEventOffersTemplate = (event) => {
+const createEventOffersTemplate = (data) => {
 
-  const {type} = event;
+  const {type, offers} = data;
 
   if (typesOffers[type].length !== 0) {
 
@@ -77,7 +76,7 @@ const createEventOffersTemplate = (event) => {
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
         <div class="event__available-offers">
-          ${createEventOfferItemsTemplate(typesOffers[type])}
+          ${createEventOfferItemsTemplate(typesOffers[type], offers)}
         </div>
       </section>`
     );
@@ -87,11 +86,18 @@ const createEventOffersTemplate = (event) => {
   }
 };
 
-const createEventOfferItemsTemplate = (arrayTypeOffer) => {
+const createEventOfferItemsTemplate = (arrayTypeOffer, eventOffers) => {
+
+  const checkOffer = (offerItem, checkedOffer) => {
+    if (checkedOffer.some((it) => it[`title`] === offerItem[`title`])) {
+      return `checked`;
+    }
+    return ``;
+  };
 
   return arrayTypeOffer.map((item) =>
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${item[`typeOffer`]}-1" type="checkbox" name="event-offer-${item[`typeOffer`]}" checked>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${item[`typeOffer`]}-1" type="checkbox" data-title="${item[`title`]}" name="event-offer-${item[`typeOffer`]}" ${checkOffer(item, eventOffers)}>
       <label class="event__offer-label" for="event-offer-${item[`typeOffer`]}-1">
         <span class="event__offer-title">${item[`title`]}</span>
         &plus;
@@ -100,10 +106,10 @@ const createEventOfferItemsTemplate = (arrayTypeOffer) => {
     </div>`).join(``);
 };
 
-const createEventDestinationTemplate = (event) => {
-  const {destination} = event;
+const createEventDestinationTemplate = (data) => {
+  const {destination} = data;
 
-  if (descriptionDestinations[event[`destination`]][`description`] || descriptionDestinations[event[`destination`]][`photos`]) {
+  if (descriptionDestinations[data[`destination`]][`description`] || descriptionDestinations[data[`destination`]][`photos`]) {
 
     return (
       `<section class="event__section  event__section--destination">
@@ -123,8 +129,8 @@ const createEventDestinationTemplate = (event) => {
   }
 };
 
-const createEventEditTemplate = (event) => {
-  const {type, destination, date, cost, action} = event;
+const createEventEditTemplate = (data) => {
+  const {type, destination, date, cost, id, isCheckFavorite} = data;
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -199,7 +205,7 @@ const createEventEditTemplate = (event) => {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${type} to
+            ${type} ${PLACEHOLDER[type]}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
           <datalist id="destination-list-1">
@@ -228,33 +234,143 @@ const createEventEditTemplate = (event) => {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        ${createEventEditActionTemplate(action)}
+        ${createEventEditActionTemplate(id, isCheckFavorite)}
       </header>
 
-      ${createEventDetailsTemplate(event)}
+      ${createEventDetailsTemplate(data)}
 
     </form>`
   );
 };
 
-export default class EventEdit extends AbstractView {
+export default class EventEdit extends SmartView {
   constructor(event = BLANK_EVENT) {
     super();
-    this._event = event;
+    this._data = EventEdit.parseEventToData(event);
+
+    this._offerInputHandler = this._offerInputHandler.bind(this);
+    this._typeInputHandler = this._typeInputHandler.bind(this);
+    this._priceInputHandler = this._priceInputHandler.bind(this);
+    this._destinationInputHandler = this._destinationInputHandler.bind(this);
+    this._favoriteInputHandler = this._favoriteInputHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
+
+    this._setInnerHandlers();
+  }
+
+  reset(event) {
+    this.updateData(
+        EventEdit.parseEventToData(event)
+    );
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._event);
+    return createEventEditTemplate(this._data);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+  }
+
+  _favoriteInputHandler(evt) {
+    evt.preventDefault();
+
+    this.updateData(
+        {
+          isFavorite: !this._data.isFavorite,
+          isCheckFavorite: !this._data.isCheckFavorite
+        }
+    );
+  }
+
+  _typeInputHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      type: `${evt.target.value[0].toUpperCase()}${evt.target.value.slice(1)}`
+    });
+  }
+
+  _destinationInputHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      destination: evt.target.value
+    });
+  }
+
+  _priceInputHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      cost: evt.target.value
+    }, true);
+  }
+
+  _offerInputHandler(evt) {
+    evt.preventDefault();
+    let title = evt.target.dataset.title;
+    const listTypesOffers = typesOffers[this._data.type];
+    let listOffers = this._data.offers;
+    let index = listTypesOffers.findIndex((item) => item[`title`] === title);
+    if (evt.target.checked) {
+      listOffers.push(listTypesOffers[index]);
+    } else {
+      listOffers = listOffers.filter((item) => item[`title`] !== title);
+    }
+    this.updateData({
+      offers: listOffers
+    });
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector(`.event__input--destination`)
+      .addEventListener(`change`, this._destinationInputHandler);
+
+    this.getElement()
+      .querySelector(`.event__input--price`)
+      .addEventListener(`input`, this._priceInputHandler);
+
+    this.getElement()
+      .querySelector(`.event__type-list`)
+      .addEventListener(`change`, this._typeInputHandler);
+
+    if (typesOffers[this._data.type].length !== 0) {
+      this.getElement()
+      .querySelector(`.event__available-offers`)
+      .addEventListener(`change`, this._offerInputHandler);
+    }
+
+    this.getElement()
+      .querySelector(`.event__favorite-btn`)
+      .addEventListener(`click`, this._favoriteInputHandler);
+
   }
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit();
+    this._callback.formSubmit(EventEdit.parseDataToEvent(this._data));
   }
 
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
     this.getElement().addEventListener(`submit`, this._formSubmitHandler);
+  }
+
+  static parseEventToData(event) {
+    return Object.assign(
+        {},
+        event,
+        {
+          isCheckFavorite: event.isFavorite,
+        }
+    );
+  }
+
+  static parseDataToEvent(data) {
+    data = Object.assign({}, data);
+
+    delete data.isCheckFavorite;
+
+    return data;
   }
 }

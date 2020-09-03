@@ -1,5 +1,6 @@
 import {getShortTime, getFullTime, durationTime} from "./../utils/event.js";
 import AbstractView from "./abstract.js";
+import {PLACEHOLDER} from "./../const.js";
 
 const createEventOfferTemplate = (offer) => {
   return (
@@ -15,20 +16,20 @@ const createTripEventsItemTemplate = (event) => {
   const {type, destination, date, offers, cost} = event;
 
   const renderOffers = () => {
-    const listOffers = [];
+    const listEventOffers = [];
     for (let y = 0; y < Math.min(offers.length, 3); y++) {
-      listOffers.push(createEventOfferTemplate(offers[y]));
+      listEventOffers.push(createEventOfferTemplate(offers[y]));
     }
-    return listOffers.join(``);
+    return listEventOffers.join(``);
   };
 
   return (
     `<li class="trip-events__item">
       <div class="event">
         <div class="event__type">
-          <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event ${type} icon">
+          <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event ${type.toLowerCase()} icon">
         </div>
-        <h3 class="event__title">${type} to ${destination} </h3>
+        <h3 class="event__title">${type} ${PLACEHOLDER[type]} ${destination} </h3>
 
         <div class="event__schedule">
           <p class="event__time">
