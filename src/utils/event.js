@@ -70,9 +70,18 @@ export const getFormatEditTime = (date) => {
 };
 
 export const sortTime = (eventA, eventB) => {
+  return (eventB.endDate - eventB.startDate) - (eventA.endDate - eventA.startDate);
+};
+
+export const sortPrice = (eventA, eventB) => {
+  return eventB.cost - eventA.cost;
+};
+/*
+export const sortTime = (eventA, eventB) => {
   return (eventB.date[1] - eventB.date[0]) - (eventA.date[1] - eventA.date[0]);
 };
 
 export const sortPrice = (eventA, eventB) => {
   return eventB.cost - eventA.cost;
 };
+*/

@@ -110,8 +110,8 @@ export default class Trip {
 
     this._clearTripEvents();
 
-    let currentDay = this._tripEvents[0].date[0].getDate();
-    let currentDate = this._tripEvents[0].date[0];
+    let currentDay = this._tripEvents[0].startDate.getDate();
+    let currentDate = this._tripEvents[0].startDate;
     let countDay = 1;
     let index = 0;
     let i;
@@ -124,11 +124,11 @@ export default class Trip {
 
       for (i = index; i < this._tripEvents.length; i++) {
 
-        if (this._tripEvents[i].date[0].getDate() === currentDay) {
+        if (this._tripEvents[i].startDate.getDate() === currentDay) {
           this._renderEvent(tripEventsListElement, this._tripEvents[i]);
         } else {
-          currentDay = this._tripEvents[i].date[0].getDate();
-          currentDate = this._tripEvents[i].date[0];
+          currentDay = this._tripEvents[i].startDate.getDate();
+          currentDate = this._tripEvents[i].startDate;
           countDay++;
           index = i;
           break;
