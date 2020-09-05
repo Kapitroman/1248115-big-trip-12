@@ -1,8 +1,10 @@
-import {getFormatEditTime} from "./../utils/event.js";
 import {DESTINATIONS, PLACEHOLDER} from "./../const.js";
 import {typesOffers} from "../mock/types-offers.js";
 import {descriptionDestinations} from "../mock/destination.js";
 import SmartView from "./smart.js";
+import flatpickr from "flatpickr";
+
+import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 const getDestinations = (listDestinations) => {
 
@@ -12,7 +14,8 @@ const getDestinations = (listDestinations) => {
 const BLANK_EVENT = {
   type: `Bus`,
   destination: ``,
-  date: [new Date(), new Date()],
+  startDate: new Date(),
+  endDate: new Date(),
   cost: 0,
   offers: typesOffers[`Bus`],
   isFavorite: false
@@ -130,7 +133,7 @@ const createEventDestinationTemplate = (data) => {
 };
 
 const createEventEditTemplate = (data) => {
-  const {type, destination, date, cost, id, isCheckFavorite} = data;
+  const {type, destination, startDate, endDate, cost, id, isCheckFavorite} = data;
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -217,12 +220,12 @@ const createEventEditTemplate = (data) => {
           <label class="visually-hidden" for="event-start-time-1">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getFormatEditTime(date[0])}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${startDate}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getFormatEditTime(date[1])}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${endDate}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -247,7 +250,9 @@ export default class EventEdit extends SmartView {
   constructor(event = BLANK_EVENT) {
     super();
     this._data = EventEdit.parseEventToData(event);
+    this._datepicker = null;
 
+    this._dueDateChangeHandler = this._dueDateChangeHandler.bind(this);
     this._offerInputHandler = this._offerInputHandler.bind(this);
     this._typeInputHandler = this._typeInputHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
@@ -256,6 +261,7 @@ export default class EventEdit extends SmartView {
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
 
     this._setInnerHandlers();
+    this._setDatepicker();
   }
 
   reset(event) {
@@ -270,7 +276,38 @@ export default class EventEdit extends SmartView {
 
   restoreHandlers() {
     this._setInnerHandlers();
+    this._setDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
+  }
+
+  _setDatepicker() {
+    if (this._datepicker) {
+      this._datepicker.forEach((item) => item.destroy());
+      this._datepicker = null;
+    }
+
+    const calendarStart = flatpickr(
+        this.getElement().querySelectorAll(`.event__input--time`)[0],
+        {
+          enableTime: true,
+          dateFormat: `d/m/y H:i`,
+          defaultDate: this._data.startDate,
+          onChange: this._dueDateChangeHandler
+        }
+    );
+
+    const calendarEnd = flatpickr(
+        this.getElement().querySelectorAll(`.event__input--time`)[1],
+        {
+          enableTime: true,
+          dateFormat: `d/m/y H:i`,
+          defaultDate: this._data.endDate,
+          minDate: this._data.startDate,
+          onChange: this._dueDateChangeHandler
+        }
+    );
+
+    this._datepicker = [calendarStart, calendarEnd];
   }
 
   _favoriteInputHandler(evt) {
@@ -319,6 +356,18 @@ export default class EventEdit extends SmartView {
     this.updateData({
       offers: listOffers
     });
+  }
+
+  _dueDateChangeHandler(userDate, strDate, fp) {
+    if (fp === this._datepicker[0]) {
+      this.updateData({
+        startDate: userDate[0]
+      });
+    } else {
+      this.updateData({
+        endDate: userDate[0]
+      });
+    }
   }
 
   _setInnerHandlers() {

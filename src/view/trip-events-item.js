@@ -13,7 +13,7 @@ const createEventOfferTemplate = (offer) => {
 };
 
 const createTripEventsItemTemplate = (event) => {
-  const {type, destination, date, offers, cost} = event;
+  const {type, destination, startDate, endDate, offers, cost} = event;
 
   const renderOffers = () => {
     const listEventOffers = [];
@@ -33,11 +33,11 @@ const createTripEventsItemTemplate = (event) => {
 
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="${getFullTime(date[0])}">${getShortTime(date[0])}</time>
+            <time class="event__start-time" datetime="${getFullTime(startDate)}">${getShortTime(startDate)}</time>
             &mdash;
-            <time class="event__end-time" datetime="${getFullTime(date[1])}">${getShortTime(date[1])}</time>
+            <time class="event__end-time" datetime="${getFullTime(endDate)}">${getShortTime(endDate)}</time>
           </p>
-          <p class="event__duration">${durationTime(date[1], date[0])}</p>
+          <p class="event__duration">${durationTime(endDate, startDate)}</p>
         </div>
 
         <p class="event__price">
