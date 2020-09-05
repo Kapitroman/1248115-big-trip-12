@@ -1,72 +1,37 @@
-import {DAY_IN_MS, HOUR_IN_MS, MINUTE_IN_MS} from "./../const.js";
+import {DAY_IN_MS, HOUR_IN_MS} from "./../const.js";
+import moment from "moment";
 
 export const getShortTime = (date) => {
-  const shortTime = [
-    `0${date.getHours()}`,
-    `0${date.getMinutes()}`
-  ].map((item) => item.slice(-2));
-
-  return shortTime.join(`:`);
+  return moment(date).format(`HH:mm`);
 };
 
 export const getDateTime = (date) => {
-  const dateTime = [
-    `0${date.getMonth() + 1}`,
-    `0${date.getDate()}`
-  ].map((item) => item.slice(-2));
-
-  return `${date.getFullYear()}-${dateTime[0]}-${dateTime[1]}`;
+  return moment(date).format(`YYYY-MM-DD`);
 };
 
 export const getFullTime = (date) => {
-  return `${getDateTime(date)}T${getShortTime(date)}`;
+  return moment(date).format(`YYYY-MM-DD[T]HH:mm`);
 };
 
 export const durationTime = (timeEnd, timeStart) => {
   const duration = (timeEnd - timeStart);
+  const minutes = moment.duration(duration).minutes();
+  const minutesString = minutes < 10 ? `0${minutes}M` : `${minutes}M`;
+  const hours = moment.duration(duration).hours();
+  const hoursString = hours < 10 ? `0${hours}H` : `${hours}H`;
+  const days = moment.duration(duration).days();
+  const daysString = days < 10 ? `0${days}D` : `${days}D`;
   if (duration < HOUR_IN_MS) {
-
-    return `0${Math.floor(duration / MINUTE_IN_MS)}M`.slice(-3);
-
+    return minutesString;
   } else if (duration < DAY_IN_MS) {
-    const hours = Math.floor(duration / HOUR_IN_MS);
-    const minutes = Math.floor((duration - hours * HOUR_IN_MS) / MINUTE_IN_MS);
-    const stringHours = `0${hours}H`.slice(-3);
-    const stringMinutes = `0${minutes}M`.slice(-3);
-
-    return `${stringHours} ${stringMinutes}`;
-
+    return `${hoursString} ${minutesString}`;
   } else {
-    const days = Math.floor(duration / (DAY_IN_MS));
-    const hours = Math.floor((duration - days * DAY_IN_MS) / HOUR_IN_MS);
-    const minutes = Math.floor((duration - days * DAY_IN_MS - hours * HOUR_IN_MS) / MINUTE_IN_MS);
-    const stringDays = `0${days}D`.slice(-3);
-    const stringHours = `0${hours}H`.slice(-3);
-    const stringMinutes = `0${minutes}M`.slice(-3);
-
-    return `${stringDays} ${stringHours} ${stringMinutes}`;
+    return `${daysString} ${hoursString} ${minutesString}`;
   }
 };
 
 export const getFormatDate = (date) => {
-  const formatter = new Intl.DateTimeFormat(`en-US`, {
-    month: `short`,
-    day: `2-digit`
-  });
-
-  return formatter.format(date);
-};
-
-export const getFormatEditTime = (date) => {
-  const shortDateTime = [
-    `0${date.getDate()}`,
-    `0${date.getMonth() + 1}`,
-    `${date.getFullYear()}`,
-    `0${date.getHours()}`,
-    `0${date.getMinutes()}`
-  ].map((item) => item.slice(-2));
-
-  return `${shortDateTime[0]}/${shortDateTime[1]}/${shortDateTime[2]} ${shortDateTime[3]}:${shortDateTime[4]}`;
+  return moment(date).format(`MMM D`);
 };
 
 export const sortTime = (eventA, eventB) => {
@@ -76,12 +41,3 @@ export const sortTime = (eventA, eventB) => {
 export const sortPrice = (eventA, eventB) => {
   return eventB.cost - eventA.cost;
 };
-/*
-export const sortTime = (eventA, eventB) => {
-  return (eventB.date[1] - eventB.date[0]) - (eventA.date[1] - eventA.date[0]);
-};
-
-export const sortPrice = (eventA, eventB) => {
-  return eventB.cost - eventA.cost;
-};
-*/

@@ -1,4 +1,3 @@
-import {getFormatEditTime} from "./../utils/event.js";
 import {DESTINATIONS, PLACEHOLDER} from "./../const.js";
 import {typesOffers} from "../mock/types-offers.js";
 import {descriptionDestinations} from "../mock/destination.js";
@@ -17,7 +16,6 @@ const BLANK_EVENT = {
   destination: ``,
   startDate: new Date(),
   endDate: new Date(),
-  //date: [new Date(), new Date()],
   cost: 0,
   offers: typesOffers[`Bus`],
   isFavorite: false
@@ -268,7 +266,7 @@ export default class EventEdit extends SmartView {
 
   reset(event) {
     this.updateData(
-      EventEdit.parseEventToData(event)
+        EventEdit.parseEventToData(event)
     );
   }
 
@@ -289,7 +287,7 @@ export default class EventEdit extends SmartView {
     }
 
     const calendarStart = flatpickr(
-      this.getElement().querySelectorAll(`.event__input--time`)[0],
+        this.getElement().querySelectorAll(`.event__input--time`)[0],
         {
           enableTime: true,
           dateFormat: `d/m/y H:i`,
@@ -299,7 +297,7 @@ export default class EventEdit extends SmartView {
     );
 
     const calendarEnd = flatpickr(
-      this.getElement().querySelectorAll(`.event__input--time`)[1],
+        this.getElement().querySelectorAll(`.event__input--time`)[1],
         {
           enableTime: true,
           dateFormat: `d/m/y H:i`,
@@ -310,7 +308,6 @@ export default class EventEdit extends SmartView {
     );
 
     this._datepicker = [calendarStart, calendarEnd];
-
   }
 
   _favoriteInputHandler(evt) {
@@ -371,7 +368,6 @@ export default class EventEdit extends SmartView {
         endDate: userDate[0]
       });
     }
-    console.log(this._datepicker[1].config);
   }
 
   _setInnerHandlers() {
