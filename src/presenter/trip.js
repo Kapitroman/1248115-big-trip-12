@@ -9,8 +9,10 @@ import {sortTime, sortPrice} from "../utils/event.js";
 import {SortType} from "../const.js";
 
 export default class Trip {
-  constructor(tripContainer) {
+  constructor(tripContainer, eventsModel) {
     this._tripContainer = tripContainer;
+    this._eventsModel = eventsModel;
+    this._currentSortType = SortType.DEFAULT;
     this._eventPresenter = {};
 
     this._tripSortComponent = new TripSortView();
@@ -22,26 +24,20 @@ export default class Trip {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
-  init(tripEvents) {
-    this._tripEvents = tripEvents.slice();
-    this._sourcedTripEvents = tripEvents.slice();
-
+  init() {
     this._renderTrip();
   }
 
-  _sortEvents(sortType) {
-    switch (sortType) {
+  _getEvents() {
+    switch (this._currentSortType) {
       case SortType.TIME:
-        this._tripEvents.sort(sortTime);
+        return this._eventsModel.getEvents().slice().sort(sortTime);
         break;
       case SortType.PRICE:
-        this._tripEvents.sort(sortPrice);
+        return this._eventsModel.getEvents().slice().sort(sortPrice);
         break;
-      case SortType.DEFAULT:
-        this._tripEvents = this._sourcedTripEvents.slice();
     }
-
-    this._currentSortType = sortType;
+    return this._eventsModel.getEvents();
   }
 
   _handleSortTypeChange(sortType) {
@@ -49,9 +45,9 @@ export default class Trip {
       return;
     }
 
-    this._sortEvents(sortType);
+    this._currentSortType = sortType;
 
-    if (sortType === SortType.DEFAULT) {
+    if (this._currentSortType === SortType.DEFAULT) {
       this._renderTripEvents();
       return;
     }
@@ -65,8 +61,7 @@ export default class Trip {
   }
 
   _handleEventChange(updatedEvent) {
-    this._tripEvents = updateItem(this._tripEvents, updatedEvent);
-    this._sourcedTripEvents = updateItem(this._sourcedTripEvents, updatedEvent);
+    // Здесь будем вызывать обновление модели
     this._eventPresenter[updatedEvent.id].init(updatedEvent);
   }
 
@@ -101,17 +96,20 @@ export default class Trip {
     const dayComponent = new DayView(null, 0);
     render(this._tripDaysComponent, dayComponent, RenderPosition.BEFOREEND);
     const tripEventsListElement = dayComponent.getElement().querySelector(`.trip-events__list`);
-    for (let i = 0; i < this._tripEvents.length; i++) {
-      this._renderEvent(tripEventsListElement, this._tripEvents[i]);
+    /*
+    for (let i = 0; i < this._getEvents().length; i++) {
+      this._renderEvent(tripEventsListElement, this._getEvents()[i]);
     }
+    */
+    this._getEvents().forEach((item) => this._renderEvent(tripEventsListElement, item));
   }
 
   _renderTripEvents() {
 
     this._clearTripEvents();
 
-    let currentDay = this._tripEvents[0].startDate.getDate();
-    let currentDate = this._tripEvents[0].startDate;
+    let currentDay = this._getEvents()[0].startDate.getDate();
+    let currentDate = this._getEvents()[0].startDate;
     let countDay = 1;
     let index = 0;
     let i;
@@ -122,23 +120,23 @@ export default class Trip {
 
       const tripEventsListElement = dayComponent.getElement().querySelector(`.trip-events__list`);
 
-      for (i = index; i < this._tripEvents.length; i++) {
+      for (i = index; i < this._getEvents().length; i++) {
 
-        if (this._tripEvents[i].startDate.getDate() === currentDay) {
-          this._renderEvent(tripEventsListElement, this._tripEvents[i]);
+        if (this._getEvents()[i].startDate.getDate() === currentDay) {
+          this._renderEvent(tripEventsListElement, this._getEvents()[i]);
         } else {
-          currentDay = this._tripEvents[i].startDate.getDate();
-          currentDate = this._tripEvents[i].startDate;
+          currentDay = this._getEvents()[i].startDate.getDate();
+          currentDate = this._getEvents()[i].startDate;
           countDay++;
           index = i;
           break;
         }
       }
-    } while (i < this._tripEvents.length);
+    } while (i < this._getEvents().length);
   }
 
   _renderTrip() {
-    if (this._tripEvents.length === 0) {
+    if (this._getEvents().length === 0) {
       this._renderNoEvents();
       return;
     }

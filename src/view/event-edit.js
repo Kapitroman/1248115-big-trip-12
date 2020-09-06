@@ -324,6 +324,9 @@ export default class EventEdit extends SmartView {
   _typeInputHandler(evt) {
     evt.preventDefault();
     this.updateData({
+      offers: []
+    }, true);
+    this.updateData({
       type: `${evt.target.value[0].toUpperCase()}${evt.target.value.slice(1)}`
     });
   }
