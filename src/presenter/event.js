@@ -90,7 +90,7 @@ export default class Event {
 
   _handleFormSubmit(event) {
     this._changeData(
-      UserAction.UPDATE_TASK,
+      UserAction.UPDATE_EVENT,
       UpdateType.MINOR,
       event
     );

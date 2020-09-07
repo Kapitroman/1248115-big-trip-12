@@ -15,7 +15,6 @@ export default class Trip {
     this._eventPresenter = {};
     this._listDays = [];
 
-    //this._tripSortComponent = new TripSortView();
     this._tripSortComponent = null;
     this._tripDaysComponent = new TripDaysView();
     this._noEventComponent = new NoEventView();
@@ -43,16 +42,7 @@ export default class Trip {
     }
     return this._eventsModel.getEvents();
   }
-/*
-  _handleSortTypeChange(sortType) {
-    if (this._currentSortType === sortType) {
-      return;
-    }
 
-    this._currentSortType = sortType;
-    this._renderTripEvents();
-  }
-  */
   _handleSortTypeChange(sortType) {
     if (this._currentSortType === sortType) {
       return;
