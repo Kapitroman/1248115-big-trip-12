@@ -4,7 +4,7 @@ import TripDaysView from "../view/trip-days.js";
 import DayView from "../view/day.js";
 import EventPresenter from "./event.js";
 import {updateItem} from "../utils/common.js";
-import {render, RenderPosition} from "../utils/render.js";
+import {render, RenderPosition, remove} from "../utils/render.js";
 import {sortTime, sortPrice} from "../utils/event.js";
 import {SortType} from "../const.js";
 
@@ -14,6 +14,7 @@ export default class Trip {
     this._eventsModel = eventsModel;
     this._currentSortType = SortType.DEFAULT;
     this._eventPresenter = {};
+    this._listDays = [];
 
     this._tripSortComponent = new TripSortView();
     this._tripDaysComponent = new TripDaysView();
@@ -46,12 +47,7 @@ export default class Trip {
     }
 
     this._currentSortType = sortType;
-
-    if (this._currentSortType === SortType.DEFAULT) {
-      this._renderTripEvents();
-      return;
-    }
-    this._renderTripEventsSort();
+    this._renderTripEvents();
   }
 
   _handleModeChange() {
@@ -76,8 +72,13 @@ export default class Trip {
   }
 
   _clearTripEvents() {
-    this._tripDaysComponent.getElement().innerHTML = ``;
+    //this._tripDaysComponent.getElement().innerHTML = ``;
+    Object
+      .values(this._eventPresenter)
+      .forEach((presenter) => presenter.destroy());
     this._eventPresenter = {};
+    this._listDays.forEach((item) => remove(item));
+    this._listDays = [];
   }
 
   _renderTripSort() {
@@ -89,50 +90,43 @@ export default class Trip {
     render(this._tripContainer, this._tripDaysComponent, RenderPosition.BEFOREEND);
   }
 
-  _renderTripEventsSort() {
-
-    this._clearTripEvents();
-
-    const dayComponent = new DayView(null, 0);
-    render(this._tripDaysComponent, dayComponent, RenderPosition.BEFOREEND);
-    const tripEventsListElement = dayComponent.getElement().querySelector(`.trip-events__list`);
-    /*
-    for (let i = 0; i < this._getEvents().length; i++) {
-      this._renderEvent(tripEventsListElement, this._getEvents()[i]);
-    }
-    */
-    this._getEvents().forEach((item) => this._renderEvent(tripEventsListElement, item));
-  }
-
   _renderTripEvents() {
 
     this._clearTripEvents();
 
-    let currentDay = this._getEvents()[0].startDate.getDate();
-    let currentDate = this._getEvents()[0].startDate;
-    let countDay = 1;
-    let index = 0;
-    let i;
+    if (this._currentSortType === SortType.DEFAULT) {
+      let currentDay = this._getEvents()[0].startDate.getDate();
+      let currentDate = this._getEvents()[0].startDate;
+      let countDay = 1;
+      let index = 0;
+      let i;
 
-    do {
-      const dayComponent = new DayView(currentDate, countDay);
-      render(this._tripDaysComponent, dayComponent, RenderPosition.BEFOREEND);
+      do {
+        const dayComponent = new DayView(currentDate, countDay);
+        render(this._tripDaysComponent, dayComponent, RenderPosition.BEFOREEND);
+        this._listDays.push(dayComponent);
+        const tripEventsListElement = dayComponent.getElement().querySelector(`.trip-events__list`);
 
-      const tripEventsListElement = dayComponent.getElement().querySelector(`.trip-events__list`);
+        for (i = index; i < this._getEvents().length; i++) {
 
-      for (i = index; i < this._getEvents().length; i++) {
-
-        if (this._getEvents()[i].startDate.getDate() === currentDay) {
-          this._renderEvent(tripEventsListElement, this._getEvents()[i]);
-        } else {
-          currentDay = this._getEvents()[i].startDate.getDate();
-          currentDate = this._getEvents()[i].startDate;
-          countDay++;
-          index = i;
-          break;
+          if (this._getEvents()[i].startDate.getDate() === currentDay) {
+            this._renderEvent(tripEventsListElement, this._getEvents()[i]);
+          } else {
+            currentDay = this._getEvents()[i].startDate.getDate();
+            currentDate = this._getEvents()[i].startDate;
+            countDay++;
+            index = i;
+            break;
+          }
         }
-      }
-    } while (i < this._getEvents().length);
+      } while (i < this._getEvents().length);
+    } else {
+      const dayComponent = new DayView(null, 0);
+      render(this._tripDaysComponent, dayComponent, RenderPosition.BEFOREEND);
+      this._listDays.push(dayComponent);
+      const tripEventsListElement = dayComponent.getElement().querySelector(`.trip-events__list`);
+      this._getEvents().forEach((item) => this._renderEvent(tripEventsListElement, item));
+    }
   }
 
   _renderTrip() {
