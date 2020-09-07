@@ -2,6 +2,7 @@ import EventEditView from "../view/event-edit.js";
 import TripEventsItemView from "../view/trip-events-item.js";
 import {render, RenderPosition, replace, remove} from "../utils/render.js";
 import {UserAction, UpdateType} from "../const.js";
+import {isDatesEqual} from "../utils/event.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
@@ -21,6 +22,7 @@ export default class Event {
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._handleEditClick = this._handleEditClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
+    this._handleDeleteClick = this._handleDeleteClick.bind(this);
   }
 
   init(event) {
@@ -34,6 +36,7 @@ export default class Event {
 
     this._tripEventsItemComponent.setEditClickHandler(this._handleEditClick);
     this._eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
+    this._eventEditComponent.setDeleteClickHandler(this._handleDeleteClick);
 
     if (prevTripEventsItemComponent === null || prevEventEditComponent === null) {
       render(this._eventListContainer, this._tripEventsItemComponent, RenderPosition.BEFOREEND);
@@ -88,12 +91,28 @@ export default class Event {
     this._replaceEventToEdit();
   }
 
-  _handleFormSubmit(event) {
+  _handleFormSubmit(update) {
+        // Проверяем, поменялись ли в задаче данные, которые попадают под фильтрацию,
+    // а значит требуют перерисовки списка - если таких нет, это PATCH-обновление
+    const isMinorUpdate =
+      !isDatesEqual(this._event.startDate, update.startDate) ||
+      !isDatesEqual(this._event.endDate, update.endDate) ||
+      this._event.cost !== update.cost;
+
     this._changeData(
-      UserAction.UPDATE_EVENT,
-      UpdateType.MINOR,
-      event
+        UserAction.UPDATE_EVENT,
+        isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+        update
     );
+
     this._replaceEditToEvent();
+  }
+
+  _handleDeleteClick(event) {
+    this._changeData(
+        UserAction.DELETE_EVENT,
+        UpdateType.MINOR,
+        event
+    );
   }
 }
