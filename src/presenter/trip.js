@@ -3,16 +3,15 @@ import TripSortView from "../view/trip-sort.js";
 import TripDaysView from "../view/trip-days.js";
 import DayView from "../view/day.js";
 import EventPresenter from "./event.js";
-import {updateItem} from "../utils/common.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
 import {sortTime, sortPrice} from "../utils/event.js";
-import {SortType} from "../const.js";
+import {SortType, UpdateType, UserAction} from "../const.js";
 
 export default class Trip {
   constructor(tripContainer, eventsModel) {
     this._tripContainer = tripContainer;
     this._eventsModel = eventsModel;
-    this._currentSortType = SortType.DEFAULT;
+    this._currentSortType = SortType.TIME;
     this._eventPresenter = {};
     this._listDays = [];
 
@@ -20,9 +19,12 @@ export default class Trip {
     this._tripDaysComponent = new TripDaysView();
     this._noEventComponent = new NoEventView();
 
+    this._handleViewAction = this._handleViewAction.bind(this);
+    this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
-    this._handleEventChange = this._handleEventChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
+
+    this._eventsModel.addObserver(this._handleModelEvent);
   }
 
   init() {
@@ -40,7 +42,7 @@ export default class Trip {
     }
     return this._eventsModel.getEvents();
   }
-
+/*
   _handleSortTypeChange(sortType) {
     if (this._currentSortType === sortType) {
       return;
@@ -49,6 +51,16 @@ export default class Trip {
     this._currentSortType = sortType;
     this._renderTripEvents();
   }
+  */
+  _handleSortTypeChange(sortType) {
+    if (this._currentSortType === sortType) {
+      return;
+    }
+
+    this._currentSortType = sortType;
+    this._clearTrip();
+    this._renderTrip();
+  }
 
   _handleModeChange() {
     Object
@@ -56,13 +68,51 @@ export default class Trip {
       .forEach((presenter) => presenter.resetView());
   }
 
-  _handleEventChange(updatedEvent) {
-    // Здесь будем вызывать обновление модели
-    this._eventPresenter[updatedEvent.id].init(updatedEvent);
+  _handleViewAction(actionType, updateType, update) {
+    console.log(actionType, updateType, update);
+    // Здесь будем вызывать обновление модели.
+    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
+    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
+    // update - обновленные данные
+    switch (actionType) {
+      case UserAction.UPDATE_EVENT:
+        this._eventsModel.updateEvent(updateType, update);
+        break;
+      case UserAction.ADD_EVENT:
+        this._eventsModel.addEvent(updateType, update);
+        break;
+      case UserAction.DELETE_EVENT:
+        this._eventsModel.deleteEvent(updateType, update);
+        break;
+    }
+  }
+
+  _handleModelEvent(updateType, data) {
+    console.log(updateType, data);
+    // В зависимости от типа изменений решаем, что делать:
+    // - обновить часть списка (например, когда поменялось описание)
+    // - обновить список (например, когда задача ушла в архив)
+    // - обновить всю доску (например, при переключении фильтра)
+    switch (updateType) {
+      case UpdateType.PATCH:
+        // - обновить часть списка (например, когда поменялось описание)
+        this._eventPresenter[data.id].init(data);
+        break;
+      case UpdateType.MINOR:
+        // - обновить список (например, когда задача ушла в архив)
+        this._clearTrip();
+        this._renderTrip();
+        break;
+      case UpdateType.MAJOR:
+        // - обновить всю доску (например, при переключении фильтра)
+        this._clearTrip({resetSortType: true});
+        this._renderTrip();
+        break;
+    }
   }
 
   _renderEvent(eventListElement, event) {
-    const eventPresenter = new EventPresenter(eventListElement, this._handleEventChange, this._handleModeChange);
+    const eventPresenter = new EventPresenter(eventListElement, this._handleViewAction, this._handleModeChange);
     eventPresenter.init(event);
     this._eventPresenter[event.id] = eventPresenter;
   }
@@ -71,6 +121,22 @@ export default class Trip {
     render(this._tripContainer, this._noEventComponent, RenderPosition.BEFOREEND);
   }
 
+  _clearTrip({resetSortType = false} = {}) {
+    remove(this._tripSortComponent);
+    remove(this._noEventComponent);
+    remove(this._tripDaysComponent);
+    Object
+      .values(this._eventPresenter)
+      .forEach((presenter) => presenter.destroy());
+    this._eventPresenter = {};
+    this._listDays.forEach((item) => remove(item));
+    this._listDays = [];
+
+    if (resetSortType) {
+      this._currentSortType = SortType.DEFAULT;
+    }
+  }
+/*
   _clearTripEvents() {
     //this._tripDaysComponent.getElement().innerHTML = ``;
     Object
@@ -80,7 +146,7 @@ export default class Trip {
     this._listDays.forEach((item) => remove(item));
     this._listDays = [];
   }
-
+*/
   _renderTripSort() {
     render(this._tripContainer, this._tripSortComponent, RenderPosition.BEFOREEND);
     this._tripSortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
@@ -92,7 +158,7 @@ export default class Trip {
 
   _renderTripEvents() {
 
-    this._clearTripEvents();
+    //this._clearTripEvents();
 
     if (this._currentSortType === SortType.DEFAULT) {
       let currentDay = this._getEvents()[0].startDate.getDate();

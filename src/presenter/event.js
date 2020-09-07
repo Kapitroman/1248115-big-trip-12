@@ -1,6 +1,7 @@
 import EventEditView from "../view/event-edit.js";
 import TripEventsItemView from "../view/trip-events-item.js";
 import {render, RenderPosition, replace, remove} from "../utils/render.js";
+import {UserAction, UpdateType} from "../const.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
@@ -88,7 +89,11 @@ export default class Event {
   }
 
   _handleFormSubmit(event) {
-    this._changeData(event);
+    this._changeData(
+      UserAction.UPDATE_TASK,
+      UpdateType.MINOR,
+      event
+    );
     this._replaceEditToEvent();
   }
 }
