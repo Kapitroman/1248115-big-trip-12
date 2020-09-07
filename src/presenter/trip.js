@@ -11,11 +11,12 @@ export default class Trip {
   constructor(tripContainer, eventsModel) {
     this._tripContainer = tripContainer;
     this._eventsModel = eventsModel;
-    this._currentSortType = SortType.TIME;
+    this._currentSortType = SortType.DEFAULT;
     this._eventPresenter = {};
     this._listDays = [];
 
-    this._tripSortComponent = new TripSortView();
+    //this._tripSortComponent = new TripSortView();
+    this._tripSortComponent = null;
     this._tripDaysComponent = new TripDaysView();
     this._noEventComponent = new NoEventView();
 
@@ -148,6 +149,12 @@ export default class Trip {
   }
 */
   _renderTripSort() {
+    if (this._tripSortComponent !== null) {
+      this._tripSortComponent = null;
+    }
+
+    this._tripSortComponent = new TripSortView(this._currentSortType);
+
     render(this._tripContainer, this._tripSortComponent, RenderPosition.BEFOREEND);
     this._tripSortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
@@ -204,5 +211,6 @@ export default class Trip {
     this._renderTripSort();
     this._renderTripDays();
     this._renderTripEvents();
+    console.log(this._currentSortType);
   }
 }
