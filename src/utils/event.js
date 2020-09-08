@@ -49,3 +49,17 @@ export const isDatesEqual = (dateA, dateB) => {
 
   return moment(dateA).isSame(dateB, `day`);
 };
+
+export const isEventPast = (dueDate) => {
+  if (dueDate === null) {
+    return false;
+  }
+  return moment(new Date).isBefore(dueDate);
+}
+
+export const isEventFuture = (dueDate) => {
+  if (dueDate === null) {
+    return false;
+  }
+  return moment(new Date).isAfter(dueDate);
+}

@@ -6,12 +6,22 @@ import {generateEvent} from "./mock/event.js";
 import {render, RenderPosition} from "./utils/render.js";
 import TitlePresenter from "./presenter/title.js";
 import TripPresenter from "./presenter/trip.js";
+import FilterModel from "./model/filter.js";
 
 const EVENT_COUNT = 20;
 const events = new Array(EVENT_COUNT).fill().map(generateEvent);
 
+const filters = [
+  {
+    type: `everything`,
+    name: `EVERYTHING`,
+  }
+];
+
 const eventsModel = new EventsModel();
 eventsModel.setEvents(events);
+
+const filterModel = new FilterModel();
 
 const tripMainElement = document.querySelector(`.trip-main`);
 
@@ -22,7 +32,7 @@ const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
 const switchTripViewElement = tripControlsElement.querySelectorAll(`h2`)[0];
 
 render(switchTripViewElement, new TripTabsView(), RenderPosition.AFTEREND);
-render(tripControlsElement, new TripFiltersView(), RenderPosition.BEFOREEND);
+render(tripControlsElement, new TripFiltersView(filters, `everything`), RenderPosition.BEFOREEND);
 
 const pageMainElement = document.querySelector(`.page-main`);
 const tripEventsElement = pageMainElement.querySelector(`.trip-events`);
