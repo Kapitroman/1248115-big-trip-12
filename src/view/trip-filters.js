@@ -7,7 +7,7 @@ const createTripFilterItemTemplate = (filter, currentFilterType) => {
         <input
           id="filter-${name}"
           class="trip-filters__filter-input  visually-hidden"
-          type="radio" name="trip-filter" value="everything"
+          type="radio" name="trip-filter"
           ${type === currentFilterType ? `checked` : ``}
           value="${type}">
         <label class="trip-filters__filter-label" for="filter-${name}">${name}</label>
@@ -40,7 +40,6 @@ export default class TripFilters extends AbstractView {
   getTemplate() {
     return createTripFiltersTemplate(this._filters, this._currentFilter);
   }
-
 
   _filterTypeChangeHandler(evt) {
     evt.preventDefault();
