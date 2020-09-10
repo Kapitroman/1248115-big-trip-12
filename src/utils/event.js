@@ -41,3 +41,25 @@ export const sortTime = (eventA, eventB) => {
 export const sortPrice = (eventA, eventB) => {
   return eventB.cost - eventA.cost;
 };
+
+export const isDatesEqual = (dateA, dateB) => {
+  if (dateA === null && dateB === null) {
+    return true;
+  }
+
+  return moment(dateA).isSame(dateB, `day`);
+};
+
+export const isEventFuture = (dueDate) => {
+  if (dueDate === null) {
+    return false;
+  }
+  return moment(new Date()).isBefore(dueDate);
+};
+
+export const isEventPast = (dueDate) => {
+  if (dueDate === null) {
+    return false;
+  }
+  return moment(new Date()).isAfter(dueDate);
+};

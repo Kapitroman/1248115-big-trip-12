@@ -21,30 +21,36 @@ const BLANK_EVENT = {
   isFavorite: false
 };
 
-const createEventEditActionTemplate = (id, isCheckFavorite) => {
+const createEventEditActionTemplate = (action, id, isCheckFavorite) => {
 
-  const checked = () => {
-    if (isCheckFavorite) {
-      return `checked`;
-    }
-    return ``;
-  };
+  if (action === `edit`) {
+    const checked = () => {
+      if (isCheckFavorite) {
+        return `checked`;
+      }
+      return ``;
+    };
 
-  return (
-    `<button class="event__reset-btn" type="reset">Delete</button>
+    return (
+      `<button class="event__reset-btn" type="reset">Delete</button>
 
-    <input id="event-favorite-${id}" class="event__favorite-checkbox visually-hidden" type="checkbox" name="event-favorite" ${checked()}>
-    <label class="event__favorite-btn" for="event-favorite-${id}">
-      <span class="visually-hidden">Add to favorite</span>
-      <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
-        <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
-      </svg>
-    </label>
+      <input id="event-favorite-${id}" class="event__favorite-checkbox visually-hidden" type="checkbox" name="event-favorite" ${checked()}>
+      <label class="event__favorite-btn" for="event-favorite-${id}">
+        <span class="visually-hidden">Add to favorite</span>
+        <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
+          <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+        </svg>
+      </label>
 
-    <button class="event__rollup-btn" type="button">
-      <span class="visually-hidden">Open event</span>
-    </button>`
-  );
+      <button class="event__rollup-btn" type="button">
+        <span class="visually-hidden">Open event</span>
+      </button>`
+    );
+  } else {
+    return (
+      `<button class="event__reset-btn" type="reset">Cancel</button>`
+    );
+  }
 };
 
 const createEventDetailsTemplate = (data) => {
@@ -112,7 +118,7 @@ const createEventOfferItemsTemplate = (arrayTypeOffer, eventOffers) => {
 const createEventDestinationTemplate = (data) => {
   const {destination} = data;
 
-  if (descriptionDestinations[data[`destination`]][`description`] || descriptionDestinations[data[`destination`]][`photos`]) {
+  if ((destination && descriptionDestinations[data[`destination`]][`description`]) || (destination && descriptionDestinations[data[`destination`]][`photos`])) {
 
     return (
       `<section class="event__section  event__section--destination">
@@ -132,7 +138,7 @@ const createEventDestinationTemplate = (data) => {
   }
 };
 
-const createEventEditTemplate = (data) => {
+const createEventEditTemplate = (action, data) => {
   const {type, destination, startDate, endDate, cost, id, isCheckFavorite} = data;
 
   return (
@@ -233,11 +239,11 @@ const createEventEditTemplate = (data) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${cost}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${cost}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        ${createEventEditActionTemplate(id, isCheckFavorite)}
+        ${createEventEditActionTemplate(action, id, isCheckFavorite)}
       </header>
 
       ${createEventDetailsTemplate(data)}
@@ -247,10 +253,11 @@ const createEventEditTemplate = (data) => {
 };
 
 export default class EventEdit extends SmartView {
-  constructor(event = BLANK_EVENT) {
+  constructor(action, event = BLANK_EVENT) {
     super();
     this._data = EventEdit.parseEventToData(event);
     this._datepicker = null;
+    this._action = action;
 
     this._dueDateChangeHandler = this._dueDateChangeHandler.bind(this);
     this._offerInputHandler = this._offerInputHandler.bind(this);
@@ -259,9 +266,20 @@ export default class EventEdit extends SmartView {
     this._destinationInputHandler = this._destinationInputHandler.bind(this);
     this._favoriteInputHandler = this._favoriteInputHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
 
     this._setInnerHandlers();
     this._setDatepicker();
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this._datepicker) {
+      this._datepicker[0].destroy();
+      this._datepicker[1].destroy();
+      this._datepicker = null;
+    }
   }
 
   reset(event) {
@@ -271,13 +289,14 @@ export default class EventEdit extends SmartView {
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._data);
+    return createEventEditTemplate(this._action, this._data);
   }
 
   restoreHandlers() {
     this._setInnerHandlers();
     this._setDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   _setDatepicker() {
@@ -323,6 +342,9 @@ export default class EventEdit extends SmartView {
 
   _typeInputHandler(evt) {
     evt.preventDefault();
+    this.updateData({
+      offers: []
+    }, true);
     this.updateData({
       type: `${evt.target.value[0].toUpperCase()}${evt.target.value.slice(1)}`
     });
@@ -389,10 +411,11 @@ export default class EventEdit extends SmartView {
       .addEventListener(`change`, this._offerInputHandler);
     }
 
-    this.getElement()
+    if (this._action === `edit`) {
+      this.getElement()
       .querySelector(`.event__favorite-btn`)
       .addEventListener(`click`, this._favoriteInputHandler);
-
+    }
   }
 
   _formSubmitHandler(evt) {
@@ -403,6 +426,16 @@ export default class EventEdit extends SmartView {
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
     this.getElement().addEventListener(`submit`, this._formSubmitHandler);
+  }
+
+  _formDeleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(EventEdit.parseDataToEvent(this._data));
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
   }
 
   static parseEventToData(event) {
