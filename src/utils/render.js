@@ -3,7 +3,8 @@ import Abstract from "../view/abstract.js";
 export const RenderPosition = {
   AFTERBEGIN: `afterbegin`,
   AFTEREND: `afterend`,
-  BEFOREEND: `beforeend`
+  BEFOREEND: `beforeend`,
+  BEFOREBEGIN: `beforebegin`
 };
 
 export const render = (container, element, place) => {

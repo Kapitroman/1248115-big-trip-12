@@ -7,7 +7,7 @@ const createTripSortTemplate = (currentSortType) => {
       <span class="trip-sort__item  trip-sort__item--day">Day</span>
 
       <div class="trip-sort__item  trip-sort__item--event">
-        <input id="sort-event" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-event" ${currentSortType === SortType.DEFAULT ? `checked` : ``} data-sort-type="${SortType.DEFAULT}" checked>
+        <input id="sort-event" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-event" ${currentSortType === SortType.DEFAULT ? `checked` : ``} data-sort-type="${SortType.DEFAULT}">
         <label class="trip-sort__btn" for="sort-event">Event</label>
       </div>
 

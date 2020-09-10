@@ -32,7 +32,7 @@ export default class Event {
     const prevEventEditComponent = this._eventEditComponent;
 
     this._tripEventsItemComponent = new TripEventsItemView(event);
-    this._eventEditComponent = new EventEditView(event);
+    this._eventEditComponent = new EventEditView(`edit`, event);
 
     this._tripEventsItemComponent.setEditClickHandler(this._handleEditClick);
     this._eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
@@ -92,8 +92,6 @@ export default class Event {
   }
 
   _handleFormSubmit(update) {
-        // Проверяем, поменялись ли в задаче данные, которые попадают под фильтрацию,
-    // а значит требуют перерисовки списка - если таких нет, это PATCH-обновление
     const isMinorUpdate =
       !isDatesEqual(this._event.startDate, update.startDate) ||
       !isDatesEqual(this._event.endDate, update.endDate) ||

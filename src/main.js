@@ -10,14 +10,7 @@ import FilterPresenter from "./presenter/filter.js";
 
 const EVENT_COUNT = 20;
 const events = new Array(EVENT_COUNT).fill().map(generateEvent);
-/*
-const filters = [
-  {
-    type: `everything`,
-    name: `EVERYTHING`,
-  }
-];
-*/
+
 const eventsModel = new EventsModel();
 eventsModel.setEvents(events);
 
@@ -32,7 +25,6 @@ const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
 const switchTripViewElement = tripControlsElement.querySelectorAll(`h2`)[0];
 
 render(switchTripViewElement, new TripTabsView(), RenderPosition.AFTEREND);
-//render(tripControlsElement, new TripFiltersView(filters, `everything`), RenderPosition.BEFOREEND);
 
 const pageMainElement = document.querySelector(`.page-main`);
 const tripEventsElement = pageMainElement.querySelector(`.trip-events`);
@@ -45,3 +37,8 @@ tripPresenter.init();
 
 const filterPresenter = new FilterPresenter(tripControlsElement, filterModel, eventsModel);
 filterPresenter.init();
+
+document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (evt) => {
+  evt.preventDefault();
+  tripPresenter.createEvent();
+});

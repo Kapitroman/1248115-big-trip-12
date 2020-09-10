@@ -54,12 +54,12 @@ export const isEventFuture = (dueDate) => {
   if (dueDate === null) {
     return false;
   }
-  return moment(new Date).isBefore(dueDate);
-}
+  return moment(new Date()).isBefore(dueDate);
+};
 
 export const isEventPast = (dueDate) => {
   if (dueDate === null) {
     return false;
   }
-  return moment(new Date).isAfter(dueDate);
-}
+  return moment(new Date()).isAfter(dueDate);
+};

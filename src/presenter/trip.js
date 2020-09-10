@@ -5,11 +5,12 @@ import DayView from "../view/day.js";
 import EventPresenter from "./event.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
 import {sortTime, sortPrice} from "../utils/event.js";
-import {SortType, UpdateType, UserAction} from "../const.js";
+import {SortType, UpdateType, UserAction, FilterType} from "../const.js";
 import {filter} from "../utils/filter.js";
+import EventNewPresenter from "./event-new.js";
 
 export default class Trip {
-  constructor(tripContainer, eventsModel,  filterModel) {
+  constructor(tripContainer, eventsModel, filterModel) {
     this._tripContainer = tripContainer;
     this._eventsModel = eventsModel;
     this._filterModel = filterModel;
@@ -28,10 +29,18 @@ export default class Trip {
 
     this._eventsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
+
+    this._eventNewPresenter = new EventNewPresenter(this._tripDaysComponent, this._handleViewAction);
   }
 
   init() {
     this._renderTrip();
+  }
+
+  createEvent() {
+    this._currentSortType = SortType.DEFAULT;
+    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this._eventNewPresenter.init();
   }
 
   _getEvents() {
@@ -42,10 +51,8 @@ export default class Trip {
     switch (this._currentSortType) {
       case SortType.TIME:
         return filtredEvents.sort(sortTime);
-        break;
       case SortType.PRICE:
         return filtredEvents.sort(sortPrice);
-        break;
     }
     return filtredEvents;
   }
@@ -61,13 +68,13 @@ export default class Trip {
   }
 
   _handleModeChange() {
+    this._eventNewPresenter.destroy();
     Object
       .values(this._eventPresenter)
       .forEach((presenter) => presenter.resetView());
   }
 
   _handleViewAction(actionType, updateType, update) {
-    console.log(actionType, updateType, update);
     // Здесь будем вызывать обновление модели.
     // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
     // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
@@ -86,7 +93,6 @@ export default class Trip {
   }
 
   _handleModelEvent(updateType, data) {
-    console.log(updateType, data);
     // В зависимости от типа изменений решаем, что делать:
     // - обновить часть списка (например, когда поменялось описание)
     // - обновить список (например, когда задача ушла в архив)
@@ -120,6 +126,7 @@ export default class Trip {
   }
 
   _clearTrip({resetSortType = false} = {}) {
+    this._eventNewPresenter.destroy();
     remove(this._tripSortComponent);
     remove(this._noEventComponent);
     remove(this._tripDaysComponent);
@@ -134,17 +141,7 @@ export default class Trip {
       this._currentSortType = SortType.DEFAULT;
     }
   }
-/*
-  _clearTripEvents() {
-    //this._tripDaysComponent.getElement().innerHTML = ``;
-    Object
-      .values(this._eventPresenter)
-      .forEach((presenter) => presenter.destroy());
-    this._eventPresenter = {};
-    this._listDays.forEach((item) => remove(item));
-    this._listDays = [];
-  }
-*/
+
   _renderTripSort() {
     if (this._tripSortComponent !== null) {
       this._tripSortComponent = null;
@@ -162,11 +159,11 @@ export default class Trip {
 
   _renderTripEvents() {
 
-    //this._clearTripEvents();
+    const listEvents = this._getEvents();
 
     if (this._currentSortType === SortType.DEFAULT) {
-      let currentDay = this._getEvents()[0].startDate.getDate();
-      let currentDate = this._getEvents()[0].startDate;
+      let currentDay = listEvents[0].startDate.getDate();
+      let currentDate = listEvents[0].startDate;
       let countDay = 1;
       let index = 0;
       let i;
@@ -177,25 +174,25 @@ export default class Trip {
         this._listDays.push(dayComponent);
         const tripEventsListElement = dayComponent.getElement().querySelector(`.trip-events__list`);
 
-        for (i = index; i < this._getEvents().length; i++) {
+        for (i = index; i < listEvents.length; i++) {
 
-          if (this._getEvents()[i].startDate.getDate() === currentDay) {
-            this._renderEvent(tripEventsListElement, this._getEvents()[i]);
+          if (listEvents[i].startDate.getDate() === currentDay) {
+            this._renderEvent(tripEventsListElement, listEvents[i]);
           } else {
-            currentDay = this._getEvents()[i].startDate.getDate();
-            currentDate = this._getEvents()[i].startDate;
+            currentDay = listEvents[i].startDate.getDate();
+            currentDate = listEvents[i].startDate;
             countDay++;
             index = i;
             break;
           }
         }
-      } while (i < this._getEvents().length);
+      } while (i < listEvents.length);
     } else {
       const dayComponent = new DayView(null, 0);
       render(this._tripDaysComponent, dayComponent, RenderPosition.BEFOREEND);
       this._listDays.push(dayComponent);
       const tripEventsListElement = dayComponent.getElement().querySelector(`.trip-events__list`);
-      this._getEvents().forEach((item) => this._renderEvent(tripEventsListElement, item));
+      listEvents.forEach((item) => this._renderEvent(tripEventsListElement, item));
     }
   }
 
@@ -208,6 +205,5 @@ export default class Trip {
     this._renderTripSort();
     this._renderTripDays();
     this._renderTripEvents();
-    console.log(this._currentSortType);
   }
 }

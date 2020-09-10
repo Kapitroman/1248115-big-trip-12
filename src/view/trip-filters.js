@@ -13,7 +13,7 @@ const createTripFilterItemTemplate = (filter, currentFilterType) => {
         <label class="trip-filters__filter-label" for="filter-${name}">${name}</label>
       </div>`
   );
-}
+};
 
 const createTripFiltersTemplate = (filterItems, currentFilterType) => {
   const filterItemsTemplate = filterItems
