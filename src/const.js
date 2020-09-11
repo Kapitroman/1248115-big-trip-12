@@ -41,10 +41,3 @@ export const FilterType = {
   FUTURE: `FUTURE`,
   PAST: `PAST`,
 };
-/*
-export const MenuItem = {
-  ADD_NEW_EVENT: `ADD_NEW_EVENT`,
-  TABLE: `TABLE`,
-  STATIS: `STATIS`
-};
-*/

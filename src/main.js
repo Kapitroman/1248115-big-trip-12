@@ -2,13 +2,13 @@ import TripInfoView from "./view/trip-info.js";
 import TripTabsView from "./view/trip-tabs.js";
 import EventsModel from "./model/events.js";
 import {generateEvent} from "./mock/event.js";
-import {render, RenderPosition} from "./utils/render.js";
+import {render, RenderPosition, remove} from "./utils/render.js";
 import TitlePresenter from "./presenter/title.js";
 import TripPresenter from "./presenter/trip.js";
 import FilterModel from "./model/filter.js";
 import FilterPresenter from "./presenter/filter.js";
 import {UpdateType, FilterType} from "./const.js";
-//import {MenuItem} from "./const.js";
+import StatisticsView from "./view/statistics.js";
 
 const EVENT_COUNT = 20;
 const events = new Array(EVENT_COUNT).fill().map(generateEvent);
@@ -41,27 +41,20 @@ tripPresenter.init();
 const filterPresenter = new FilterPresenter(tripControlsElement, filterModel, eventsModel);
 filterPresenter.init();
 
+let statisticsComponent = null;
+
 const handleSiteMenuClick = (tab) => {
   switch (tab) {
-    /*
-    case MenuItem.ADD_NEW_EVENT:
-      // Скрыть статистику
-      // Показать доску
-      // Показать форму добавления новой задачи
-      // Убрать выделение с ADD NEW TASK после сохранения
-      break;
-    */
     case `table`:
-      // Показать доску
       tripPresenter.init();
       tripTabsComponent.setMenuItem(`table`);
-      // Скрыть статистику
+      remove(statisticsComponent);
       break;
     case `stats`:
-      // Скрыть доску
       tripPresenter.destroy();
       tripTabsComponent.setMenuItem(`stats`);
-      // Показать статистику
+      statisticsComponent = new StatisticsView(eventsModel.getEvents());
+      render(tripEventsElement, statisticsComponent, RenderPosition.AFTEREND);
       break;
   }
 };
@@ -77,14 +70,12 @@ const handleTaskNewFormClose = () => {
 
 buttonAddNew.addEventListener(`click`, (evt) => {
   evt.preventDefault();
-  //buttonAddNew.setAttribute(`disabled`, ``);
   evt.target.blur();
   evt.target.disabled = true;
+  remove(statisticsComponent);
   tripPresenter.destroy();
   filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
   tripPresenter.init();
-  //boardPresenter.createTask(handleTaskNewFormClose);
-  //siteMenuComponent.getElement().querySelector(`[value=${MenuItem.TASKS}]`).disabled = true;
 
   tripPresenter.createEvent(handleTaskNewFormClose);
 
