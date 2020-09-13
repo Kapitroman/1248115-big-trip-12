@@ -186,7 +186,7 @@ const createEventEditTemplate = (action, data) => {
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
+                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight">
                 <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
               </div>
             </fieldset>
@@ -360,7 +360,7 @@ export default class EventEdit extends SmartView {
   _priceInputHandler(evt) {
     evt.preventDefault();
     this.updateData({
-      cost: evt.target.value
+      cost: Number(evt.target.value)
     }, true);
   }
 

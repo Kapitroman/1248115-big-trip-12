@@ -325,5 +325,6 @@ export default class Statistics extends SmartView {
     this._moneyCart = renderMoneyChart(moneyCtx, this._data);
     this._transportChart = renderTransportChart(transportCtx, this._data);
     this._timeSpendChart = renderTimeSpendChart(timeSpendCtx, this._data);
+
   }
 }
