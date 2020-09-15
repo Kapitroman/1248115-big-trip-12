@@ -41,7 +41,7 @@ export const generateEvent = () => {
     destination: generateDestination(),
     startDate: generateEventDate()[0],
     endDate: generateEventDate()[1],
-    cost: getRandomInteger(20, 1000),
+    price: getRandomInteger(20, 1000),
     offers: generateOffers(eventType),
     isFavorite: Math.random() > 0.5
   };

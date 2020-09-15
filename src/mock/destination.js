@@ -26,6 +26,7 @@ const getDescription = () => {
   return listDescription.join(` `);
 };
 
+/*
 const getPhotos = () => {
   const randomCount = getRandomInteger(1, 5);
   const listPhotos = [];
@@ -42,3 +43,63 @@ export const descriptionDestinations = {
   [DESTINATIONS[2]]: {description: getDescription(), photos: getPhotos()},
   [DESTINATIONS[3]]: {description: getDescription(), photos: getPhotos()}
 };
+*/
+
+export const descriptionDestinations = {
+  [DESTINATIONS[0]]: {
+    description: getDescription(),
+    pictures: [
+      {
+        "src": `http://picsum.photos/300/200?r=${Math.random()}`,
+        "description": "Chamonix parliament building"
+      },
+      {
+        "src": `http://picsum.photos/300/200?r=${Math.random()}`,
+        "description": "Chamonix parliament building"
+      },
+      {
+        "src": `http://picsum.photos/300/200?r=${Math.random()}`,
+        "description": "Chamonix parliament building"
+      }
+    ]
+  },
+  [DESTINATIONS[1]]: {
+    description: null,
+    pictures: null
+  },
+  [DESTINATIONS[2]]: {
+    description: getDescription(),
+    pictures: [
+      {
+        "src": `http://picsum.photos/300/200?r=${Math.random()}`,
+        "description": "Chamonix parliament building"
+      },
+      {
+        "src": `http://picsum.photos/300/200?r=${Math.random()}`,
+        "description": "Chamonix parliament building"
+      },
+      {
+        "src": `http://picsum.photos/300/200?r=${Math.random()}`,
+        "description": "Chamonix parliament building"
+      }
+    ]
+  },
+  [DESTINATIONS[3]]: {
+    description: getDescription(),
+    pictures: [
+      {
+        "src": `http://picsum.photos/300/200?r=${Math.random()}`,
+        "description": "Chamonix parliament building"
+      },
+      {
+        "src": `http://picsum.photos/300/200?r=${Math.random()}`,
+        "description": "Chamonix parliament building"
+      },
+      {
+        "src": `http://picsum.photos/300/200?r=${Math.random()}`,
+        "description": "Chamonix parliament building"
+      }
+    ]
+  }
+};
+

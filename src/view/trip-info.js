@@ -13,12 +13,16 @@ const createTripInfoTemplate = (events) => {
 };
 
 export default class TripInfo extends AbstractView {
-  constructor(events) {
+  constructor(eventsModel) {
     super();
-    this._events = events;
+    this._eventsModel = eventsModel;
+  }
+
+  _getEvents() {
+    return this._eventsModel.getEvents();
   }
 
   getTemplate() {
-    return createTripInfoTemplate(this._events);
+    return createTripInfoTemplate(this._getEvents());
   }
 }

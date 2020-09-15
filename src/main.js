@@ -1,7 +1,8 @@
 import TripInfoView from "./view/trip-info.js";
 import TripTabsView from "./view/trip-tabs.js";
 import EventsModel from "./model/events.js";
-import {generateEvent} from "./mock/event.js";
+import OffersModel from "./model/offers.js";
+import DestinationsModel from "./model/destinations.js";
 import {render, RenderPosition, remove} from "./utils/render.js";
 import TitlePresenter from "./presenter/title.js";
 import TripPresenter from "./presenter/trip.js";
@@ -9,37 +10,36 @@ import FilterModel from "./model/filter.js";
 import FilterPresenter from "./presenter/filter.js";
 import {UpdateType, FilterType} from "./const.js";
 import StatisticsView from "./view/statistics.js";
+import Api from "./api.js";
 
-const EVENT_COUNT = 20;
-const events = new Array(EVENT_COUNT).fill().map(generateEvent);
+const AUTHORIZATION = `Basic hS2sd3dfSwcl1s158`;
+const END_POINT = `https://12.ecmascript.pages.academy/big-trip`;
 
 const eventsModel = new EventsModel();
-eventsModel.setEvents(events);
-
+const offersModel = new OffersModel();
+const destinationsModel = new DestinationsModel();
 const filterModel = new FilterModel();
+const tpipInfoComponent = new TripInfoView(eventsModel);
+const tripTabsComponent = new TripTabsView();
 
 const tripMainElement = document.querySelector(`.trip-main`);
-
-const tpipInfoComponent = new TripInfoView(events);
-render(tripMainElement, tpipInfoComponent, RenderPosition.AFTERBEGIN);
-
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
 const switchTripViewElement = tripControlsElement.querySelectorAll(`h2`)[0];
-
-const tripTabsComponent = new TripTabsView();
-render(switchTripViewElement, tripTabsComponent, RenderPosition.AFTEREND);
-
 const pageMainElement = document.querySelector(`.page-main`);
 const tripEventsElement = pageMainElement.querySelector(`.trip-events`);
 
 const titlePresenter = new TitlePresenter(tpipInfoComponent, eventsModel);
-titlePresenter.init();
-
 const tripPresenter = new TripPresenter(tripEventsElement, eventsModel, filterModel);
-tripPresenter.init();
-
 const filterPresenter = new FilterPresenter(tripControlsElement, filterModel, eventsModel);
-filterPresenter.init();
+
+const api = new Api(END_POINT, AUTHORIZATION);
+
+const buttonAddNew = document.querySelector(`.trip-main__event-add-btn`);
+
+const handleEventNewFormClose = () => {
+  buttonAddNew.disabled = false;
+  tripTabsComponent.setMenuItem(`table`);
+};
 
 let statisticsComponent = null;
 
@@ -59,14 +59,14 @@ const handleSiteMenuClick = (tab) => {
   }
 };
 
+render(tripMainElement, tpipInfoComponent, RenderPosition.AFTERBEGIN);
+render(switchTripViewElement, tripTabsComponent, RenderPosition.AFTEREND);
+
+titlePresenter.init();
+tripPresenter.init();
+filterPresenter.init();
+
 tripTabsComponent.setMenuClickHandler(handleSiteMenuClick);
-
-const buttonAddNew = document.querySelector(`.trip-main__event-add-btn`);
-
-const handleTaskNewFormClose = () => {
-  buttonAddNew.disabled = false;
-  tripTabsComponent.setMenuItem(`table`);
-};
 
 buttonAddNew.addEventListener(`click`, (evt) => {
   evt.preventDefault();
@@ -77,6 +77,32 @@ buttonAddNew.addEventListener(`click`, (evt) => {
   filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
   tripPresenter.init();
 
-  tripPresenter.createEvent(handleTaskNewFormClose);
+  tripPresenter.createEvent(handleEventNewFormClose);
 
 });
+
+api.getDestinations()
+  .then((destinations) => {
+    destinationsModel.setDestinations(UpdateType.INIT, destinations);
+  })
+  .catch(() => {
+    destinationsModel.setDestinations(UpdateType.INIT, []);
+ });
+
+api.getOffers()
+  .then((offers) => {
+    offersModel.setOffers(UpdateType.INIT, offers);
+  })
+  .catch(() => {
+    offersModel.setOffers(UpdateType.INIT, []);
+ });
+
+api.getEvents()
+  .then((events) => {
+    console.log(events);
+    eventsModel.setEvents(UpdateType.INIT, events);
+  })
+  .catch(() => {
+    eventsModel.setEvents(UpdateType.INIT, []);
+ });
+
