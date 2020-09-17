@@ -11,7 +11,7 @@ import EventNewPresenter from "./event-new.js";
 import LoadingView from "../view/loading.js";
 
 export default class Trip {
-  constructor(tripContainer, eventsModel, filterModel, offersModel, destinationsModel) {
+  constructor(tripContainer, eventsModel, filterModel, offersModel, destinationsModel, api) {
     this._tripContainer = tripContainer;
     this._eventsModel = eventsModel;
     this._filterModel = filterModel;
@@ -21,6 +21,7 @@ export default class Trip {
     this._eventPresenter = {};
     this._listDays = [];
     this._isLoading = true;
+    this._api = api;
 
     this._tripSortComponent = null;
     this._tripDaysComponent = new TripDaysView();
@@ -35,9 +36,6 @@ export default class Trip {
     this._eventNewPresenter = new EventNewPresenter(this._tripDaysComponent, this._handleViewAction);
 
   }
-
-
-
 
   init() {
     this._renderTrip();
@@ -91,7 +89,9 @@ export default class Trip {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        this._eventsModel.updateEvent(updateType, update);
+        this._api.updateData(update).then((response) => {
+          this._eventsModel.updateEvent(updateType, response);
+        });
         break;
       case UserAction.ADD_EVENT:
         this._eventsModel.addEvent(updateType, update);

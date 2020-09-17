@@ -21,6 +21,7 @@ const destinationsModel = new DestinationsModel();
 const filterModel = new FilterModel();
 const tpipInfoComponent = new TripInfoView(eventsModel);
 const tripTabsComponent = new TripTabsView();
+const api = new Api(END_POINT, AUTHORIZATION);
 
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
@@ -29,10 +30,8 @@ const pageMainElement = document.querySelector(`.page-main`);
 const tripEventsElement = pageMainElement.querySelector(`.trip-events`);
 
 const titlePresenter = new TitlePresenter(tpipInfoComponent, eventsModel);
-const tripPresenter = new TripPresenter(tripEventsElement, eventsModel, filterModel, offersModel, destinationsModel);
+const tripPresenter = new TripPresenter(tripEventsElement, eventsModel, filterModel, offersModel, destinationsModel, api);
 const filterPresenter = new FilterPresenter(tripControlsElement, filterModel, eventsModel);
-
-const api = new Api(END_POINT, AUTHORIZATION);
 
 const buttonAddNew = document.querySelector(`.trip-main__event-add-btn`);
 
@@ -60,13 +59,10 @@ const handleSiteMenuClick = (tab) => {
 };
 
 render(tripMainElement, tpipInfoComponent, RenderPosition.AFTERBEGIN);
-render(switchTripViewElement, tripTabsComponent, RenderPosition.AFTEREND);
 
 titlePresenter.init();
 tripPresenter.init();
 filterPresenter.init();
-
-tripTabsComponent.setMenuClickHandler(handleSiteMenuClick);
 
 buttonAddNew.addEventListener(`click`, (evt) => {
   evt.preventDefault();
@@ -78,7 +74,6 @@ buttonAddNew.addEventListener(`click`, (evt) => {
   tripPresenter.init();
 
   tripPresenter.createEvent(handleEventNewFormClose);
-
 });
 
 api.getDestinations()
@@ -99,10 +94,12 @@ api.getOffers()
 
 api.getEvents()
   .then((events) => {
-    //console.log(events);
     eventsModel.setEvents(UpdateType.INIT, events);
+    render(switchTripViewElement, tripTabsComponent, RenderPosition.AFTEREND);
+    tripTabsComponent.setMenuClickHandler(handleSiteMenuClick);
+  })
+  .catch(() => {
+    eventsModel.setEvents(UpdateType.INIT, []);
+    render(switchTripViewElement, tripTabsComponent, RenderPosition.AFTEREND);
+    tripTabsComponent.setMenuClickHandler(handleSiteMenuClick);
   });
-  //.catch(() => {
-  //  eventsModel.setEvents(UpdateType.INIT, []);
- //});
-
