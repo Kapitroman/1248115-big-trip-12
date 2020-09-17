@@ -52,7 +52,9 @@ export default class Trip {
   }
 
   createEvent(callback) {
-    this._eventNewPresenter.init(callback);
+    const listOffers = this._offersModel.getOffers();
+    const listDestinations = this._destinationsModel.getDestinations();
+    this._eventNewPresenter.init(callback, listOffers, listDestinations);
   }
 
   _getEvents() {
@@ -178,7 +180,6 @@ export default class Trip {
   _renderTripEvents() {
 
     const listEvents = this._getEvents();
-    //console.log(listEvents);
 
     if (this._currentSortType === SortType.DEFAULT) {
       let currentDay = listEvents[0].startDate.getDate();
@@ -192,13 +193,9 @@ export default class Trip {
         render(this._tripDaysComponent, dayComponent, RenderPosition.BEFOREEND);
         this._listDays.push(dayComponent);
         const tripEventsListElement = dayComponent.getElement().querySelector(`.trip-events__list`);
-        //console.log(listEvents[0]);
-        //console.log(new Date());
         for (i = index; i < listEvents.length; i++) {
 
           if (listEvents[i].startDate.getDate() === currentDay) {
-            //console.log(true);
-            //console.log(listEvents[i]);
             this._renderEvent(tripEventsListElement, listEvents[i]);
           } else {
             currentDay = listEvents[i].startDate.getDate();

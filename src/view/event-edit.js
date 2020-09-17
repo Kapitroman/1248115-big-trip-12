@@ -77,10 +77,6 @@ const createEventOffersTemplate = (data, listOffers) => {
 
   const {type, offers} = data;
 
-  console.log(type);
-  console.log(listOffers);
-  console.log(listOffers[`bus`]);
-
   if (listOffers[type].length) {
 
     return (

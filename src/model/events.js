@@ -8,7 +8,7 @@ export default class Events extends Observer {
 
   setEvents(updateType, events) {
     this._events = events.slice();
-    console.log(this._events);
+
     this._notify(updateType);
   }
 

@@ -15,14 +15,16 @@ export default class EventNew {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
-  init(callback) {
+  init(callback, offers, destinations) {
     this._destroyCallback = callback;
 
     if (this._eventEditComponent !== null) {
       return;
     }
 
-    this._eventEditComponent = new EventEditView();
+
+
+    this._eventEditComponent = new EventEditView(`new`, undefined, offers, destinations);
     this._eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventEditComponent.setDeleteClickHandler(this._handleDeleteClick);
 
