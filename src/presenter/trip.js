@@ -33,7 +33,11 @@ export default class Trip {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
     this._eventNewPresenter = new EventNewPresenter(this._tripDaysComponent, this._handleViewAction);
+
   }
+
+
+
 
   init() {
     this._renderTrip();
@@ -99,9 +103,11 @@ export default class Trip {
   }
 
   _handleModelEvent(updateType, data) {
+    const listOffers = this._offersModel.getOffers();
+    const listDestinations = this._destinationsModel.getDestinations();
     switch (updateType) {
       case UpdateType.PATCH:
-        this._eventPresenter[data.id].init(data);
+        this._eventPresenter[data.id].init(data, listOffers, listDestinations);
         break;
       case UpdateType.MINOR:
         this._clearTrip();
@@ -121,9 +127,8 @@ export default class Trip {
 
   _renderEvent(eventListElement, event) {
     const listOffers = this._offersModel.getOffers();
-    //console.log(listOffers);
     const listDestinations = this._destinationsModel.getDestinations();
-    //console.log(listDestinations);
+
     const eventPresenter = new EventPresenter(eventListElement, this._handleViewAction, this._handleModeChange);
     eventPresenter.init(event, listOffers, listDestinations);
     this._eventPresenter[event.id] = eventPresenter;
