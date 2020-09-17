@@ -25,27 +25,20 @@ export default class Event {
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
   }
 
-  init(event) {
+  init(event, offers, destinations) {
     this._event = event;
-    //console.log(this._event);
 
     const prevTripEventsItemComponent = this._tripEventsItemComponent;
-    //if (!prevTripEventsItemComponent) console.log(true);
     const prevEventEditComponent = this._eventEditComponent;
-    //if (!prevEventEditComponent) console.log(true);
+
     this._tripEventsItemComponent = new TripEventsItemView(event);
-    //console.log(this._tripEventsItemComponent);
-    //if (!prevTripEventsItemComponent) console.log(true);
-    this._eventEditComponent = new EventEditView(`edit`, event);
-   // if (!this._eventEditComponent) console.log(true);
-    //if (!this._tripEventsItemComponent) console.log(true);
-    //console.log(`ghbdtnm`);
+    this._eventEditComponent = new EventEditView(`edit`, event, offers, destinations);
+
     this._tripEventsItemComponent.setEditClickHandler(this._handleEditClick);
     this._eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventEditComponent.setDeleteClickHandler(this._handleDeleteClick);
-    //console.log(this._tripEventsItemComponent);
+
     if (prevTripEventsItemComponent === null || prevEventEditComponent === null) {
-      //console.log(true);
       render(this._eventListContainer, this._tripEventsItemComponent, RenderPosition.BEFOREEND);
       return;
     }

@@ -11,10 +11,12 @@ import EventNewPresenter from "./event-new.js";
 import LoadingView from "../view/loading.js";
 
 export default class Trip {
-  constructor(tripContainer, eventsModel, filterModel) {
+  constructor(tripContainer, eventsModel, filterModel, offersModel, destinationsModel) {
     this._tripContainer = tripContainer;
     this._eventsModel = eventsModel;
     this._filterModel = filterModel;
+    this._offersModel = offersModel;
+    this._destinationsModel = destinationsModel;
     this._currentSortType = SortType.DEFAULT;
     this._eventPresenter = {};
     this._listDays = [];
@@ -118,8 +120,12 @@ export default class Trip {
   }
 
   _renderEvent(eventListElement, event) {
+    const listOffers = this._offersModel.getOffers();
+    //console.log(listOffers);
+    const listDestinations = this._destinationsModel.getDestinations();
+    //console.log(listDestinations);
     const eventPresenter = new EventPresenter(eventListElement, this._handleViewAction, this._handleModeChange);
-    eventPresenter.init(event);
+    eventPresenter.init(event, listOffers, listDestinations);
     this._eventPresenter[event.id] = eventPresenter;
   }
 

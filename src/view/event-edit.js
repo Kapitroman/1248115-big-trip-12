@@ -1,15 +1,10 @@
 import {DESTINATIONS, PLACEHOLDER} from "./../const.js";
 //import {typesOffers} from "../mock/types-offers.js";
 //import {descriptionDestinations} from "../mock/destination.js";
-import DestinationsModel from "../model/destinations.js";
-import OffersModel from "../model/offers.js";
 import SmartView from "./smart.js";
 import flatpickr from "flatpickr";
 
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
-
-const offersModel = new OffersModel();
-const destinationsModel = new DestinationsModel();
 
 const BLANK_EVENT = {
   type: `bus`,
@@ -57,7 +52,7 @@ const createEventEditActionTemplate = (action, id, isCheckFavorite) => {
   }
 };
 
-const createEventDetailsTemplate = (data) => {
+const createEventDetailsTemplate = (data, listOffers) => {
 
   const {offers, destination} = data;
 
@@ -67,7 +62,7 @@ const createEventDetailsTemplate = (data) => {
 
     return (
       `<section class="event__details">
-      ${createEventOffersTemplate(data)}
+      ${createEventOffersTemplate(data, listOffers)}
       ${createEventDestinationTemplate(data)}
 
     </section>`
@@ -78,18 +73,22 @@ const createEventDetailsTemplate = (data) => {
   }
 };
 
-const createEventOffersTemplate = (data) => {
+const createEventOffersTemplate = (data, listOffers) => {
 
   const {type, offers} = data;
 
-  if (offersModel.getOffers()[type].length !==0 ) {
+  console.log(type);
+  console.log(listOffers);
+  console.log(listOffers[`bus`]);
+
+  if (listOffers[type].length) {
 
     return (
       `<section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
         <div class="event__available-offers">
-          ${createEventOfferItemsTemplate(offersModel.getOffers()[type], offers)}
+          ${createEventOfferItemsTemplate(listOffers[type], offers)}
         </div>
       </section>`
     );
@@ -157,11 +156,13 @@ const createEventDestinationTemplate = (data) => {
   }
 };
 
-const createEventEditTemplate = (action, data) => {
+const createEventEditTemplate = (action, data, listOffers, listDestinations) => {
   const {type, destination, startDate, endDate, price, id, isCheckFavorite} = data;
 
   const getListDestinations = () => {
-    return destinationsModel.getDestinations().map((item) => `<option value="${item[`name`]}"></option>`).join(``);
+    console.log(listDestinations);
+
+    return listDestinations.map((item) => `<option value="${item[`name`]}"></option>`).join(``);
 
   };
 
@@ -240,9 +241,9 @@ const createEventEditTemplate = (action, data) => {
           <label class="event__label  event__type-output" for="event-destination-1">
           ${type[0].toUpperCase()}${type.slice(1)} ${PLACEHOLDER[type]}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination[`name`]}" list="destination-list-1">
           <datalist id="destination-list-1">
-            ${getListDestinations}
+            ${getListDestinations()}
           </datalist>
         </div>
 
@@ -270,18 +271,20 @@ const createEventEditTemplate = (action, data) => {
         ${createEventEditActionTemplate(action, id, isCheckFavorite)}
       </header>
 
-      ${createEventDetailsTemplate(data)}
+      ${createEventDetailsTemplate(data, listOffers)}
 
     </form>`
   );
 };
 
 export default class EventEdit extends SmartView {
-  constructor(action, event = BLANK_EVENT) {
+  constructor(action, event = BLANK_EVENT, offers, destinations) {
     super();
     this._data = EventEdit.parseEventToData(event);
     this._datepicker = null;
     this._action = action;
+    this._offers = offers;
+    this._destinations = destinations;
 
     this._dueDateChangeHandler = this._dueDateChangeHandler.bind(this);
     this._offerInputHandler = this._offerInputHandler.bind(this);
@@ -313,7 +316,8 @@ export default class EventEdit extends SmartView {
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._action, this._data);
+    console.log(this._destinations);
+    return createEventEditTemplate(this._action, this._data, this._offers, this._destinations);
   }
 
   restoreHandlers() {
@@ -370,14 +374,22 @@ export default class EventEdit extends SmartView {
       offers: []
     }, true);
     this.updateData({
-      type: `${evt.target.value[0].toUpperCase()}${evt.target.value.slice(1)}`
+      type: `${evt.target.value}`
     });
   }
 
   _destinationInputHandler(evt) {
     evt.preventDefault();
+    const index = evt.target.value;
+    let apdatedDistination;
+    for (let i = 0; i < this._destinations.length; i++) {
+      if (this._destinations[i][`name`] === index) {
+        apdatedDistination = this._destinations[i];
+        break;
+      }
+    }
     this.updateData({
-      destination: evt.target.value
+      destination: apdatedDistination
     });
   }
 
@@ -391,16 +403,16 @@ export default class EventEdit extends SmartView {
   _offerInputHandler(evt) {
     evt.preventDefault();
     let title = evt.target.dataset.title;
-    const listTypesOffers = typesOffers[this._data.type];
-    let listOffers = this._data.offers;
+    const listTypesOffers = this._offers[this._data.type];
+    let listItemOffers = this._data.offers;
     let index = listTypesOffers.findIndex((item) => item[`title`] === title);
     if (evt.target.checked) {
-      listOffers.push(listTypesOffers[index]);
+      listItemOffers.push(listTypesOffers[index]);
     } else {
-      listOffers = listOffers.filter((item) => item[`title`] !== title);
+      listItemOffers = listItemOffers.filter((item) => item[`title`] !== title);
     }
     this.updateData({
-      offers: listOffers
+      offers: listItemOffers
     });
   }
 
@@ -429,7 +441,7 @@ export default class EventEdit extends SmartView {
       .querySelector(`.event__type-list`)
       .addEventListener(`change`, this._typeInputHandler);
 
-    if (typesOffers[this._data.type].length !== 0) {
+    if (this._offers[this._data.type].length) {
       this.getElement()
       .querySelector(`.event__available-offers`)
       .addEventListener(`change`, this._offerInputHandler);

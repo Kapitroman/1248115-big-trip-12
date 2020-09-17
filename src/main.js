@@ -29,7 +29,7 @@ const pageMainElement = document.querySelector(`.page-main`);
 const tripEventsElement = pageMainElement.querySelector(`.trip-events`);
 
 const titlePresenter = new TitlePresenter(tpipInfoComponent, eventsModel);
-const tripPresenter = new TripPresenter(tripEventsElement, eventsModel, filterModel);
+const tripPresenter = new TripPresenter(tripEventsElement, eventsModel, filterModel, offersModel, destinationsModel);
 const filterPresenter = new FilterPresenter(tripControlsElement, filterModel, eventsModel);
 
 const api = new Api(END_POINT, AUTHORIZATION);
@@ -99,10 +99,10 @@ api.getOffers()
 
 api.getEvents()
   .then((events) => {
-    console.log(events);
+    //console.log(events);
     eventsModel.setEvents(UpdateType.INIT, events);
-  })
-  .catch(() => {
-    eventsModel.setEvents(UpdateType.INIT, []);
- });
+  });
+  //.catch(() => {
+  //  eventsModel.setEvents(UpdateType.INIT, []);
+ //});
 
