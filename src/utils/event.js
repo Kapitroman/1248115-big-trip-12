@@ -39,7 +39,7 @@ export const sortTime = (eventA, eventB) => {
 };
 
 export const sortPrice = (eventA, eventB) => {
-  return eventB.cost - eventA.cost;
+  return eventB.price - eventA.price;
 };
 
 export const isDatesEqual = (dateA, dateB) => {

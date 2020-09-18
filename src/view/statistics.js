@@ -12,7 +12,7 @@ const renderMoneyChart = (moneyCtx, events) => {
       let total = 0;
       for (let y = 0; y < eventsTrip.length; y++) {
         if (eventsTrip[y][`type`] === uniqTypes[i]) {
-          total += eventsTrip[y][`cost`];
+          total += eventsTrip[y][`price`];
         }
       }
       moneyTrip.push([uniqTypes[i], total]);
@@ -25,7 +25,7 @@ const renderMoneyChart = (moneyCtx, events) => {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data: {
-      labels: result(events).map((item) => item[0]),
+      labels: result(events).map((item) => item[0].toUpperCase()),
       datasets: [{
         data: result(events).map((item) => item[1]),
         backgroundColor: `#ffffff`,
@@ -109,7 +109,7 @@ const renderTransportChart = (transportCtx, events) => {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data: {
-      labels: result(events).map((item) => item[0]),
+      labels: result(events).map((item) => item[0].toUpperCase()),
       datasets: [{
         data: result(events).map((item) => item[1]),
         backgroundColor: `#ffffff`,
@@ -193,7 +193,7 @@ const renderTimeSpendChart = (timeSpendCtx, events) => {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data: {
-      labels: result(events).map((item) => item[0]),
+      labels: result(events).map((item) => item[0].toUpperCase()),
       datasets: [{
         data: result(events).map((item) => item[1]),
         backgroundColor: `#ffffff`,

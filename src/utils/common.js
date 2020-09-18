@@ -10,7 +10,7 @@ export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10)
 export const getTotalCost = (events) => {
   let total = 0;
   for (let i = 0; i < events.length; i++) {
-    total += events[i].cost;
+    total += events[i].price;
   }
   return total;
 };

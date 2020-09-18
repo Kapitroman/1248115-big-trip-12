@@ -15,18 +15,23 @@ export default class EventNew {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
-  init(callback) {
+  init(callback, sortContainer, offers, destinations) {
     this._destroyCallback = callback;
+    this._sortContainer = sortContainer;
 
     if (this._eventEditComponent !== null) {
       return;
     }
 
-    this._eventEditComponent = new EventEditView();
+    this._eventEditComponent = new EventEditView(`new`, undefined, offers, destinations);
     this._eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventEditComponent.setDeleteClickHandler(this._handleDeleteClick);
 
-    render(this._eventListContainer, this._eventEditComponent, RenderPosition.AFTERBEGIN);
+    if (this._sortContainer) {
+      render(this._sortContainer, this._eventEditComponent, RenderPosition.AFTEREND);
+    } else {
+      render(document.querySelector(`.trip-events h2`), this._eventEditComponent, RenderPosition.AFTEREND);
+    }
 
     document.addEventListener(`keydown`, this._escKeyDownHandler);
   }

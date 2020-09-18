@@ -25,14 +25,14 @@ export default class Event {
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
   }
 
-  init(event) {
+  init(event, offers, destinations) {
     this._event = event;
 
     const prevTripEventsItemComponent = this._tripEventsItemComponent;
     const prevEventEditComponent = this._eventEditComponent;
 
     this._tripEventsItemComponent = new TripEventsItemView(event);
-    this._eventEditComponent = new EventEditView(`edit`, event);
+    this._eventEditComponent = new EventEditView(`edit`, event, offers, destinations);
 
     this._tripEventsItemComponent.setEditClickHandler(this._handleEditClick);
     this._eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
@@ -95,7 +95,7 @@ export default class Event {
     const isMinorUpdate =
       !isDatesEqual(this._event.startDate, update.startDate) ||
       !isDatesEqual(this._event.endDate, update.endDate) ||
-      this._event.cost !== update.cost;
+      this._event.price !== update.price;
 
     this._changeData(
         UserAction.UPDATE_EVENT,

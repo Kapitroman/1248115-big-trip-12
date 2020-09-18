@@ -7,13 +7,13 @@ const createEventOfferTemplate = (offer) => {
     `<li class="event__offer">
       <span class="event__offer-title">${offer.title}</span>
       &plus;
-      &euro;&nbsp;<span class="event__offer-price">${offer.cost}</span>
+      &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
     </li>`
   );
 };
 
 const createTripEventsItemTemplate = (event) => {
-  const {type, destination, startDate, endDate, offers, cost} = event;
+  const {type, destination, startDate, endDate, offers, price} = event;
 
   const renderOffers = () => {
     const listEventOffers = [];
@@ -27,9 +27,9 @@ const createTripEventsItemTemplate = (event) => {
     `<li class="trip-events__item">
       <div class="event">
         <div class="event__type">
-          <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event ${type.toLowerCase()} icon">
+          <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event ${type} icon">
         </div>
-        <h3 class="event__title">${type} ${PLACEHOLDER[type]} ${destination} </h3>
+        <h3 class="event__title">${type[0].toUpperCase()}${type.slice(1)} ${PLACEHOLDER[type]} ${destination[`name`]} </h3>
 
         <div class="event__schedule">
           <p class="event__time">
@@ -41,7 +41,7 @@ const createTripEventsItemTemplate = (event) => {
         </div>
 
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">${cost}</span>
+          &euro;&nbsp;<span class="event__price-value">${price}</span>
         </p>
 
         <h4 class="visually-hidden">Offers:</h4>

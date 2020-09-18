@@ -8,19 +8,25 @@ import {sortTime, sortPrice} from "../utils/event.js";
 import {SortType, UpdateType, UserAction} from "../const.js";
 import {filter} from "../utils/filter.js";
 import EventNewPresenter from "./event-new.js";
+import LoadingView from "../view/loading.js";
 
 export default class Trip {
-  constructor(tripContainer, eventsModel, filterModel) {
+  constructor(tripContainer, eventsModel, filterModel, offersModel, destinationsModel, api) {
     this._tripContainer = tripContainer;
     this._eventsModel = eventsModel;
     this._filterModel = filterModel;
+    this._offersModel = offersModel;
+    this._destinationsModel = destinationsModel;
     this._currentSortType = SortType.DEFAULT;
     this._eventPresenter = {};
     this._listDays = [];
+    this._isLoading = true;
+    this._api = api;
 
     this._tripSortComponent = null;
     this._tripDaysComponent = new TripDaysView();
     this._noEventComponent = new NoEventView();
+    this._loadingComponent = new LoadingView();
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -28,6 +34,7 @@ export default class Trip {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
     this._eventNewPresenter = new EventNewPresenter(this._tripDaysComponent, this._handleViewAction);
+
   }
 
   init() {
@@ -45,7 +52,9 @@ export default class Trip {
   }
 
   createEvent(callback) {
-    this._eventNewPresenter.init(callback);
+    const listOffers = this._offersModel.getOffers();
+    const listDestinations = this._destinationsModel.getDestinations();
+    this._eventNewPresenter.init(callback, this._tripSortComponent, listOffers, listDestinations);
   }
 
   _getEvents() {
@@ -82,7 +91,9 @@ export default class Trip {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        this._eventsModel.updateEvent(updateType, update);
+        this._api.updateData(update).then((response) => {
+          this._eventsModel.updateEvent(updateType, response);
+        });
         break;
       case UserAction.ADD_EVENT:
         this._eventsModel.addEvent(updateType, update);
@@ -94,9 +105,11 @@ export default class Trip {
   }
 
   _handleModelEvent(updateType, data) {
+    const listOffers = this._offersModel.getOffers();
+    const listDestinations = this._destinationsModel.getDestinations();
     switch (updateType) {
       case UpdateType.PATCH:
-        this._eventPresenter[data.id].init(data);
+        this._eventPresenter[data.id].init(data, listOffers, listDestinations);
         break;
       case UpdateType.MINOR:
         this._clearTrip();
@@ -106,13 +119,25 @@ export default class Trip {
         this._clearTrip({resetSortType: true});
         this._renderTrip();
         break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
+        this._renderTrip();
+        break;
     }
   }
 
   _renderEvent(eventListElement, event) {
+    const listOffers = this._offersModel.getOffers();
+    const listDestinations = this._destinationsModel.getDestinations();
+
     const eventPresenter = new EventPresenter(eventListElement, this._handleViewAction, this._handleModeChange);
-    eventPresenter.init(event);
+    eventPresenter.init(event, listOffers, listDestinations);
     this._eventPresenter[event.id] = eventPresenter;
+  }
+
+  _renderLoading() {
+    render(this._tripContainer, this._loadingComponent, RenderPosition.BEFOREEND);
   }
 
   _renderNoEvents() {
@@ -123,6 +148,7 @@ export default class Trip {
     this._eventNewPresenter.destroy();
     remove(this._tripSortComponent);
     remove(this._noEventComponent);
+    remove(this._loadingComponent);
     remove(this._tripDaysComponent);
     Object
       .values(this._eventPresenter)
@@ -167,7 +193,6 @@ export default class Trip {
         render(this._tripDaysComponent, dayComponent, RenderPosition.BEFOREEND);
         this._listDays.push(dayComponent);
         const tripEventsListElement = dayComponent.getElement().querySelector(`.trip-events__list`);
-
         for (i = index; i < listEvents.length; i++) {
 
           if (listEvents[i].startDate.getDate() === currentDay) {
@@ -191,6 +216,11 @@ export default class Trip {
   }
 
   _renderTrip() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
     if (this._getEvents().length === 0) {
       this._renderNoEvents();
       return;
