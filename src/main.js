@@ -19,8 +19,8 @@ const eventsModel = new EventsModel();
 const offersModel = new OffersModel();
 const destinationsModel = new DestinationsModel();
 const filterModel = new FilterModel();
-const tpipInfoComponent = new TripInfoView(eventsModel);
 const tripTabsComponent = new TripTabsView();
+const tpipInfoComponent = new TripInfoView(eventsModel);
 const api = new Api(END_POINT, AUTHORIZATION);
 
 const tripMainElement = document.querySelector(`.trip-main`);
