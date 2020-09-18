@@ -82,7 +82,7 @@ api.getDestinations()
   })
   .catch(() => {
     destinationsModel.setDestinations(UpdateType.INIT, []);
- });
+  });
 
 api.getOffers()
   .then((offers) => {
@@ -90,7 +90,7 @@ api.getOffers()
   })
   .catch(() => {
     offersModel.setOffers(UpdateType.INIT, []);
- });
+  });
 
 api.getEvents()
   .then((events) => {

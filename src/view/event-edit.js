@@ -1,6 +1,4 @@
-import {DESTINATIONS, PLACEHOLDER} from "./../const.js";
-//import {typesOffers} from "../mock/types-offers.js";
-//import {descriptionDestinations} from "../mock/destination.js";
+import {PLACEHOLDER} from "./../const.js";
 import SmartView from "./smart.js";
 import flatpickr from "flatpickr";
 
@@ -12,11 +10,7 @@ const BLANK_EVENT = {
   startDate: new Date(),
   endDate: new Date(),
   price: 0,
-  offers:  [
-    {title: "Infotainment system", price: 50},
-    {title: "Order meal", price: 100},
-    {title: "Choose seats", price: 190}
-  ],
+  offers: [],
   isFavorite: false
 };
 
@@ -54,9 +48,9 @@ const createEventEditActionTemplate = (action, id, isCheckFavorite) => {
 
 const createEventDetailsTemplate = (data, listOffers) => {
 
-  const {offers, destination} = data;
+  const {type, destination} = data;
 
-  if (offers.length !== 0 ||
+  if (listOffers[type].length ||
     destination[`description`] ||
     destination[`pictures`]) {
 
@@ -105,7 +99,7 @@ const createEventOfferItemsTemplate = (arrayTypeOffer, eventOffers) => {
 
   const generateIdInput = (string) => {
     return string.split(` `).join(``);
-  }
+  };
 
   return arrayTypeOffer.map((item) =>
     `<div class="event__offer-selector">
@@ -126,11 +120,11 @@ const createEventDestinationTemplate = (data) => {
     const listStringPictures = [];
     for (let i = 0; i < listPictures.length; i++) {
       listStringPictures.push(
-        `<img class="event__photo" src="${listPictures[i][`src`]}" alt="${listPictures[i][`description`]}"></img>`
+          `<img class="event__photo" src="${listPictures[i][`src`]}" alt="${listPictures[i][`description`]}"></img>`
       );
     }
     return listStringPictures.join(` `);
-  }
+  };
 
   if (destination[`description`] || destination[`pictures`]) {
 
@@ -156,7 +150,6 @@ const createEventEditTemplate = (action, data, listOffers, listDestinations) => 
   const {type, destination, startDate, endDate, price, id, isCheckFavorite} = data;
 
   const getListDestinations = () => {
-    console.log(listDestinations);
 
     return listDestinations.map((item) => `<option value="${item[`name`]}"></option>`).join(``);
 
@@ -312,7 +305,6 @@ export default class EventEdit extends SmartView {
   }
 
   getTemplate() {
-    console.log(this._destinations);
     return createEventEditTemplate(this._action, this._data, this._offers, this._destinations);
   }
 

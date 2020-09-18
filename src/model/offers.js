@@ -8,7 +8,6 @@ export default class Offers extends Observer {
 
   setOffers(updateType, offers) {
     this._offers = offers;
-    console.log(this._offers);
     this._notify(updateType);
   }
 
@@ -20,7 +19,7 @@ export default class Offers extends Observer {
   static adaptToClient(offers) {
     const adaptedOffers = {};
     for (let i = 0; i < offers.length; i++) {
-      adaptedOffers[offers[i][`type`]] = offers[i][`offers`]
+      adaptedOffers[offers[i][`type`]] = offers[i][`offers`];
     }
     return adaptedOffers;
   }
@@ -28,11 +27,14 @@ export default class Offers extends Observer {
   static adaptToServer(offers) {
     const adaptedOffers = [];
     for (let prop in offers) {
+      if (!offers.hasOwnProperty(prop)) {
+        continue;
+      }
       adaptedOffers.push(
-        {
-          "type": prop,
-          "offers": offers[prop]
-        }
+          {
+            "type": prop,
+            "offers": offers[prop]
+          }
       );
     }
     return adaptedOffers;

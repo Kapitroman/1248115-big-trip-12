@@ -58,21 +58,20 @@ export default class Events extends Observer {
 
   static adaptToClient(event) {
     const adaptedEvent = Object.assign(
-      {},
-      event,
-      {
-        startDate: event.date_from !== null ? new Date(event.date_from) : event.date_from,
-        endDate: event.date_to !== null ? new Date(event.date_to) : event.date_to,
-        price: event.base_price,
-        isFavorite: event.is_favorite
-      }
+        {},
+        event,
+        {
+          startDate: event.date_from !== null ? new Date(event.date_from) : event.date_from,
+          endDate: event.date_to !== null ? new Date(event.date_to) : event.date_to,
+          price: event.base_price,
+          isFavorite: event.is_favorite
+        }
     );
 
     delete adaptedEvent.date_from;
     delete adaptedEvent.date_to;
     delete adaptedEvent.is_favorite;
     delete adaptedEvent.base_price;
-
 
     return adaptedEvent;
   }

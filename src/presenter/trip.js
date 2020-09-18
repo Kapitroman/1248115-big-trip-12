@@ -54,7 +54,7 @@ export default class Trip {
   createEvent(callback) {
     const listOffers = this._offersModel.getOffers();
     const listDestinations = this._destinationsModel.getDestinations();
-    this._eventNewPresenter.init(callback, listOffers, listDestinations);
+    this._eventNewPresenter.init(callback, this._tripSortComponent, listOffers, listDestinations);
   }
 
   _getEvents() {
