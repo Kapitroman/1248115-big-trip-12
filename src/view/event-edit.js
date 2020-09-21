@@ -126,7 +126,7 @@ const createEventDestinationTemplate = (data) => {
     return listStringPictures.join(` `);
   };
 
-  if (destination[`description`] || destination[`pictures`]) {
+  if (destination && destination[`description`] || destination && destination[`pictures`]) {
 
     return (
       `<section class="event__section  event__section--destination">
@@ -230,7 +230,7 @@ const createEventEditTemplate = (action, data, listOffers, listDestinations) => 
           <label class="event__label  event__type-output" for="event-destination-1">
           ${type[0].toUpperCase()}${type.slice(1)} ${PLACEHOLDER[type]}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination[`name`]}" list="destination-list-1" ${isDisabled ? `disabled` : ``}>
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? destination[`name`] : ``}" list="destination-list-1" ${isDisabled ? `disabled` : ``}>
           <datalist id="destination-list-1">
             ${getListDestinations()}
           </datalist>
