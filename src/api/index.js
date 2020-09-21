@@ -1,5 +1,5 @@
-import EventsModel from "./model/events.js";
-import OffersModel from "./model/offers.js";
+import EventsModel from "../model/events.js";
+import OffersModel from "../model/offers.js";
 
 const Method = {
   GET: `GET`,
@@ -22,7 +22,7 @@ export default class Api {
   getEvents() {
     return this._load({url: `points`})
       .then(Api.toJSON)
-      .then((events) => events.map((item) => EventsModel.adaptToClient(item)));
+      .then((events) => events.map(EventsModel.adaptToClient));
   }
 
   getOffers() {
@@ -63,6 +63,16 @@ export default class Api {
       url: `points/${event.id}`,
       method: Method.DELETE
     });
+  }
+
+  sync(data) {
+    return this._load({
+      url: `points/sync`,
+      method: Method.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({"Content-Type": `application/json`})
+    })
+      .then(Api.toJSON);
   }
 
   _load({

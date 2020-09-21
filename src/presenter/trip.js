@@ -94,7 +94,7 @@ export default class Trip {
         this._eventPresenter[update.id].setViewState(EventPresenterViewState.SAVING);
         this._api.updateData(update)
           .then((response) => {
-            this._eventsModel.updateEvent(updateType, response);
+            this._eventsModel.updateData(updateType, response);
           })
           .catch(() => {
             this._eventPresenter[update.id].setViewState(EventPresenterViewState.ABORTING);
