@@ -29,14 +29,6 @@ export const render = (container, element, place) => {
   }
 };
 
-export const renderTemplate = (container, template, place) => {
-  if (container instanceof Abstract) {
-    container = container.getElement();
-  }
-
-  container.insertAdjacentHTML(place, template);
-};
-
 export const createElement = (template) => {
   const newElement = document.createElement(`div`);
   newElement.innerHTML = template;
@@ -73,4 +65,8 @@ export const remove = (component) => {
 
   component.getElement().remove();
   component.removeElement();
+};
+
+export const sortTable = (eventA, eventB) => {
+  return (eventA.startDate - eventB.startDate);
 };

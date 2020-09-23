@@ -14,9 +14,8 @@ export default class EventNew {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
-  init(callback, sortContainer, offers, destinations) {
+  init(callback, offers, destinations) {
     this._destroyCallback = callback;
-    this._sortContainer = sortContainer;
 
     if (this._eventEditComponent !== null) {
       return;
@@ -26,8 +25,8 @@ export default class EventNew {
     this._eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventEditComponent.setDeleteClickHandler(this._handleDeleteClick);
 
-    if (this._sortContainer) {
-      render(this._sortContainer, this._eventEditComponent, RenderPosition.AFTEREND);
+    if (document.querySelector(`trip-events__trip-sort`)) {
+      render(document.querySelector(`trip-events__trip-sort`), this._eventEditComponent, RenderPosition.AFTEREND);
     } else {
       render(document.querySelector(`.trip-events h2`), this._eventEditComponent, RenderPosition.AFTEREND);
     }

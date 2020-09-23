@@ -6,11 +6,27 @@ const createTripInfoTitleTemplate = (events) => {
 
   const createTripTitleTemplate = () => {
     if (events.length) {
+      const getEventDestinations = () => {
+        if (events.length < 3) {
+          return `${events[0].destination[`name`]} &mdash; ${events[events.length - 1].destination[`name`]}`;
+        }
+        if (events.length === 3) {
+          return `${events[0].destination[`name`]} &mdash; ${events[1].destination[`name`]} &mdash; ${events[events.length - 1].destination[`name`]}`;
+        }
+        return `${events[0].destination[`name`]} &mdash; ... &mdash; ${events[events.length - 1].destination[`name`]}`;
+      };
+
+      const getEventDates = () => {
+        if (events.length === 1) {
+          return `${getFormatDate(events[events.length - 1].endDate)}`;
+        }
+        return `${getFormatDate(events[0].startDate)}&nbsp;&mdash;&nbsp;${getFormatDate(events[events.length - 1].endDate)}`;
+      };
 
       return (
         `<div class="trip-info__main">
-          <h1 class="trip-info__title">${events[0].destination[`name`]} &mdash; ... &mdash; ${events[events.length - 1].destination[`name`]} </h1>
-          <p class="trip-info__dates">${getFormatDate(events[0].startDate)}&nbsp;&mdash;&nbsp;${getFormatDate(events[events.length - 1].endDate)}</p>
+          <h1 class="trip-info__title">${getEventDestinations()} </h1>
+          <p class="trip-info__dates">${getEventDates()}</p>
         </div>`
       );
     }

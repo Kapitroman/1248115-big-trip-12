@@ -31,14 +31,15 @@ export default class TripTabs extends AbstractView {
   }
 
   setMenuItem(tab) {
-    const item = this.getElement().querySelector(`[data-view="${tab}"]`);
-    const tabs = this.getElement().querySelectorAll(`.trip-tabs__btn`);
-    for (let i = 0; i < tabs.length; i++) {
-      if (tabs[i].classList.contains(`trip-tabs__btn--active`)) {
-        tabs[i].classList.remove(`trip-tabs__btn--active`);
+    const itemActived = this.getElement().querySelector(`[data-view="${tab}"]`);
+    const tabs = Array.from(this.getElement().querySelectorAll(`.trip-tabs__btn`));
+    const removeClass = (element) => {
+      if (element.classList.contains(`trip-tabs__btn--active`)) {
+        element.classList.remove(`trip-tabs__btn--active`);
       }
-    }
-    item.classList.add(`trip-tabs__btn--active`);
+    };
+    tabs.forEach((item) => removeClass(item));
+    itemActived.classList.add(`trip-tabs__btn--active`);
   }
 
 }

@@ -1,4 +1,5 @@
 import Observer from "../utils/observer.js";
+import {sortTable} from "../utils/render.js";
 
 export default class Events extends Observer {
   constructor() {
@@ -36,7 +37,7 @@ export default class Events extends Observer {
     this._events = [
       update,
       ...this._events
-    ];
+    ].sort(sortTable);
 
     this._notify(updateType, update);
   }

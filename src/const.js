@@ -1,5 +1,4 @@
 export const EVENT_TYPES = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check-in`, `sightseeing`, `restaurant`];
-export const DESTINATIONS = [`Amsterdam`, `Geneva`, `Chamonix`, `Saint Petersburg`];
 
 export const SortType = {
   DEFAULT: `default`,
@@ -7,9 +6,10 @@ export const SortType = {
   PRICE: `price`
 };
 
-export const DAY_IN_MS = 24 * 3600 * 1000;
-export const HOUR_IN_MS = 3600 * 1000;
-export const MINUTE_IN_MS = 60 * 1000;
+export const TimeInMs = {
+  DAY_IN_MS: 24 * 3600 * 1000,
+  HOUR_IN_MS: 3600 * 1000
+};
 
 export const PLACEHOLDER = {
   [EVENT_TYPES[0]]: `to`,

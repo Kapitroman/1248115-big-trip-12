@@ -2,6 +2,7 @@ import SmartView from "./smart.js";
 import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {uniqTypesTrip, sortTrip} from "../utils/statistics.js";
+import {TimeInMs} from "./../const.js";
 
 const renderMoneyChart = (moneyCtx, events) => {
 
@@ -183,7 +184,7 @@ const renderTimeSpendChart = (timeSpendCtx, events) => {
           time += (eventsTrip[y][`endDate`] - eventsTrip[y][`startDate`]);
         }
       }
-      timeTrip.push([uniqTypes[i], Math.round(time / (3600 * 1000))]);
+      timeTrip.push([uniqTypes[i], Math.round(time / TimeInMs.HOUR_IN_MS)]);
     }
 
     return timeTrip.sort(sortTrip);
