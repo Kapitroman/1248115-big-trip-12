@@ -66,3 +66,7 @@ export const remove = (component) => {
   component.getElement().remove();
   component.removeElement();
 };
+
+export const sortTable = (eventA, eventB) => {
+  return (eventA.startDate - eventB.startDate);
+};

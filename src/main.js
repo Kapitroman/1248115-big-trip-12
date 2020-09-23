@@ -13,7 +13,7 @@ import IndexApi from "./api/index-api.js";
 import Store from "./api/store.js";
 import Provider from "./api/provider.js";
 
-const AUTHORIZATION = `Basic hS2sd3dfSwcl1s160`;
+const AUTHORIZATION = `Basic hS2sd3dfSwcl1s162`;
 const END_POINT = `https://12.ecmascript.pages.academy/big-trip`;
 const STORE_PREFIX = `big-trip-localstorage`;
 const STORE_VER = `v12`;
@@ -43,6 +43,7 @@ const infoTitlePresenter = new InfoTitlePresenter(tripMainElement, eventsModel);
 const buttonAddNew = document.querySelector(`.trip-main__event-add-btn`);
 
 let statisticsComponent = null;
+let currentTab = `table`;
 
 const handleEventNewFormClose = () => {
   buttonAddNew.disabled = false;
@@ -50,6 +51,10 @@ const handleEventNewFormClose = () => {
 };
 
 const handleSiteMenuClick = (tab) => {
+  if (currentTab === tab) {
+    return;
+  }
+  currentTab = tab;
   switch (tab) {
     case `table`:
       tripPresenter.init();
