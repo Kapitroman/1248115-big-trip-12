@@ -28,7 +28,7 @@ export default class Events extends Observer {
       ...this._events.slice(0, index),
       update,
       ...this._events.slice(index + 1)
-    ];
+    ].sort(sortTable);
 
     this._notify(updateType, update);
   }
