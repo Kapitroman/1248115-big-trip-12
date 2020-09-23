@@ -9,11 +9,11 @@ import FilterModel from "./model/filter.js";
 import FilterPresenter from "./presenter/filter.js";
 import {UpdateType, FilterType} from "./const.js";
 import StatisticsView from "./view/statistics.js";
-import Api from "./api/index.js";
+import IndexApi from "./api/index-api.js";
 import Store from "./api/store.js";
 import Provider from "./api/provider.js";
 
-const AUTHORIZATION = `Basic hS2sd3dfSwcl1s159`;
+const AUTHORIZATION = `Basic hS2sd3dfSwcl1s160`;
 const END_POINT = `https://12.ecmascript.pages.academy/big-trip`;
 const STORE_PREFIX = `big-trip-localstorage`;
 const STORE_VER = `v12`;
@@ -21,7 +21,7 @@ const STORE_NAME_EVENTS = `${STORE_PREFIX}-EVENTS-${STORE_VER}`;
 const STORE_NAME_OFFERS = `${STORE_PREFIX}-OFFERS-${STORE_VER}`;
 const STORE_NAME_DESTINATIONS = `${STORE_PREFIX}-DESTINATIONS-${STORE_VER}`;
 
-const api = new Api(END_POINT, AUTHORIZATION);
+const api = new IndexApi(END_POINT, AUTHORIZATION);
 const store = new Store(STORE_NAME_EVENTS, STORE_NAME_OFFERS, STORE_NAME_DESTINATIONS, window.localStorage);
 const apiWithProvider = new Provider(api, store);
 const eventsModel = new EventsModel();
@@ -42,12 +42,12 @@ const infoTitlePresenter = new InfoTitlePresenter(tripMainElement, eventsModel);
 
 const buttonAddNew = document.querySelector(`.trip-main__event-add-btn`);
 
+let statisticsComponent = null;
+
 const handleEventNewFormClose = () => {
   buttonAddNew.disabled = false;
   tripTabsComponent.setMenuItem(`table`);
 };
-
-let statisticsComponent = null;
 
 const handleSiteMenuClick = (tab) => {
   switch (tab) {
@@ -65,10 +65,6 @@ const handleSiteMenuClick = (tab) => {
   }
 };
 
-tripPresenter.init();
-filterPresenter.init();
-infoTitlePresenter.init();
-
 buttonAddNew.addEventListener(`click`, (evt) => {
   evt.preventDefault();
   evt.target.blur();
@@ -80,6 +76,28 @@ buttonAddNew.addEventListener(`click`, (evt) => {
 
   tripPresenter.createEvent(handleEventNewFormClose);
 });
+
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`/sw.js`)
+    .then(() => {
+      console.log(`ServiceWorker available`); // eslint-disable-line
+    }).catch(() => {
+      console.error(`ServiceWorker isn't available`); // eslint-disable-line
+    });
+});
+
+window.addEventListener(`online`, () => {
+  document.title = document.title.replace(` [offline]`, ``);
+  apiWithProvider.sync();
+});
+
+window.addEventListener(`offline`, () => {
+  document.title += ` [offline]`;
+});
+
+tripPresenter.init();
+filterPresenter.init();
+infoTitlePresenter.init();
 
 apiWithProvider.getDestinations()
   .then((destinations) => {
@@ -108,21 +126,3 @@ apiWithProvider.getEvents()
     render(switchTripViewElement, tripTabsComponent, RenderPosition.AFTEREND);
     tripTabsComponent.setMenuClickHandler(handleSiteMenuClick);
   });
-
-window.addEventListener(`load`, () => {
-  navigator.serviceWorker.register(`/sw.js`)
-    .then(() => {
-      console.log(`ServiceWorker available`); // eslint-disable-line
-    }).catch(() => {
-      console.error(`ServiceWorker isn't available`); // eslint-disable-line
-    });
-});
-
-window.addEventListener(`online`, () => {
-  document.title = document.title.replace(` [offline]`, ``);
-  apiWithProvider.sync();
-});
-
-window.addEventListener(`offline`, () => {
-  document.title += ` [offline]`;
-});

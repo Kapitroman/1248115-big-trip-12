@@ -16,85 +16,61 @@ const BLANK_EVENT = {
 
 const createEventEditActionTemplate = (action, id, isCheckFavorite, isDisabled, isDeleting) => {
 
-  if (action === `edit`) {
-    const checked = () => {
-      if (isCheckFavorite) {
-        return `checked`;
-      }
-      return ``;
-    };
+  return action === `edit`
+    ?
+    `<button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>${isDeleting ? `Deleting...` : `Delete`}</button>
 
-    return (
-      `<button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>${isDeleting ? `Deleting...` : `Delete`}</button>
+    <input id="event-favorite-${id}" class="event__favorite-checkbox visually-hidden" type="checkbox" name="event-favorite" ${isCheckFavorite ? `checked` : ``} ${isDisabled ? `disabled` : ``}>
+    <label class="event__favorite-btn" for="event-favorite-${id}">
+      <span class="visually-hidden">Add to favorite</span>
+      <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
+        <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+      </svg>
+    </label>
 
-      <input id="event-favorite-${id}" class="event__favorite-checkbox visually-hidden" type="checkbox" name="event-favorite" ${checked()} ${isDisabled ? `disabled` : ``}>
-      <label class="event__favorite-btn" for="event-favorite-${id}">
-        <span class="visually-hidden">Add to favorite</span>
-        <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
-          <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
-        </svg>
-      </label>
-
-      <button class="event__rollup-btn" type="button">
-        <span class="visually-hidden">Open event</span>
-      </button>`
-    );
-  } else {
-    return (
-      `<button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>${isDeleting ? `Canceling...` : `Cancel`}</button>`
-    );
-  }
+    <button class="event__rollup-btn" type="button">
+      <span class="visually-hidden">Open event</span>
+    </button>`
+    :
+    `<button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>${isDeleting ? `Canceling...` : `Cancel`}</button>`;
 };
 
 const createEventDetailsTemplate = (data, listOffers) => {
 
   const {type, destination, isDisabled} = data;
 
-  if (listOffers[type].length ||
-    destination[`description`] ||
-    destination[`pictures`]) {
-
-    return (
-      `<section class="event__details">
+  return (listOffers[type].length || destination[`description`] || destination[`pictures`])
+    ?
+    `<section class="event__details">
       ${createEventOffersTemplate(data, listOffers, isDisabled)}
       ${createEventDestinationTemplate(data)}
-
     </section>`
-    );
-  } else {
-
-    return ``;
-  }
+    :
+    ``;
 };
 
 const createEventOffersTemplate = (data, listOffers, isDisabled) => {
 
   const {type, offers} = data;
 
-  if (listOffers[type].length) {
+  return listOffers[type].length
+    ?
+    `<section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
-    return (
-      `<section class="event__section  event__section--offers">
-        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-        <div class="event__available-offers">
-          ${createEventOfferItemsTemplate(listOffers[type], offers, isDisabled)}
-        </div>
-      </section>`
-    );
-  } else {
-
-    return ``;
-  }
+      <div class="event__available-offers">
+        ${createEventOfferItemsTemplate(listOffers[type], offers, isDisabled)}
+      </div>
+    </section>`
+    :
+    ``;
 };
 
 const createEventOfferItemsTemplate = (arrayTypeOffer, eventOffers, isDisabled) => {
 
   const checkOffer = (offerItem, checkedOffer) => {
-    if (checkedOffer.some((it) => it[`title`] === offerItem[`title`])) {
-      return `checked`;
-    }
-    return ``;
+    return (checkedOffer.some((it) => it[`title`] === offerItem[`title`]))
+      ? `checked` : ``;
   };
 
   const generateIdInput = (string) => {
@@ -118,32 +94,26 @@ const createEventDestinationTemplate = (data) => {
   const getStringPhotos = () => {
     const listPictures = destination[`pictures`];
     const listStringPictures = [];
-    for (let i = 0; i < listPictures.length; i++) {
-      listStringPictures.push(
-          `<img class="event__photo" src="${listPictures[i][`src`]}" alt="${listPictures[i][`description`]}"></img>`
-      );
-    }
+    listPictures.forEach((item) => listStringPictures.push(
+        `<img class="event__photo" src="${item[`src`]}" alt="${item[`description`]}"></img>`
+    ));
     return listStringPictures.join(` `);
   };
 
-  if (destination && destination[`description`] || destination && destination[`pictures`]) {
+  return (destination && destination[`description`] || destination && destination[`pictures`])
+    ?
+    `<section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${destination[`description`]}</p>
 
-    return (
-      `<section class="event__section  event__section--destination">
-        <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${destination[`description`]}</p>
-
-        <div class="event__photos-container">
-          <div class="event__photos-tape">
-            ${getStringPhotos()}
-          </div>
+      <div class="event__photos-container">
+        <div class="event__photos-tape">
+          ${getStringPhotos()}
         </div>
-      </section>`
-    );
-  } else {
-
-    return ``;
-  }
+      </div>
+    </section>`
+    :
+    ``;
 };
 
 const createEventEditTemplate = (action, data, listOffers, listDestinations) => {

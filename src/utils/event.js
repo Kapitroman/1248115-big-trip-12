@@ -1,4 +1,4 @@
-import {DAY_IN_MS, HOUR_IN_MS} from "./../const.js";
+import {TimeInMs} from "./../const.js";
 import moment from "moment";
 
 export const getShortTime = (date) => {
@@ -21,9 +21,9 @@ export const durationTime = (timeEnd, timeStart) => {
   const hoursString = hours < 10 ? `0${hours}H` : `${hours}H`;
   const days = moment.duration(duration).days();
   const daysString = days < 10 ? `0${days}D` : `${days}D`;
-  if (duration < HOUR_IN_MS) {
+  if (duration < TimeInMs.HOUR_IN_MS) {
     return minutesString;
-  } else if (duration < DAY_IN_MS) {
+  } else if (duration < TimeInMs.DAY_IN_MS) {
     return `${hoursString} ${minutesString}`;
   } else {
     return `${daysString} ${hoursString} ${minutesString}`;

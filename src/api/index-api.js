@@ -13,7 +13,7 @@ const SuccessHTTPStatusRange = {
   MAX: 299
 };
 
-export default class Api {
+export default class IndexApi {
   constructor(endPoint, authorization) {
     this._endPoint = endPoint;
     this._authorization = authorization;
@@ -21,19 +21,19 @@ export default class Api {
 
   getEvents() {
     return this._load({url: `points`})
-      .then(Api.toJSON)
+      .then(IndexApi.toJSON)
       .then((events) => events.map(EventsModel.adaptToClient));
   }
 
   getOffers() {
     return this._load({url: `offers`})
-      .then(Api.toJSON)
+      .then(IndexApi.toJSON)
       .then((offers) => OffersModel.adaptToClient(offers));
   }
 
   getDestinations() {
     return this._load({url: `destinations`})
-      .then(Api.toJSON);
+      .then(IndexApi.toJSON);
   }
 
   updateData(event) {
@@ -43,7 +43,7 @@ export default class Api {
       body: JSON.stringify(EventsModel.adaptToServer(event)),
       headers: new Headers({"Content-Type": `application/json`})
     })
-      .then(Api.toJSON)
+      .then(IndexApi.toJSON)
       .then(EventsModel.adaptToClient);
   }
 
@@ -54,7 +54,7 @@ export default class Api {
       body: JSON.stringify(EventsModel.adaptToServer(event)),
       headers: new Headers({"Content-Type": `application/json`})
     })
-      .then(Api.toJSON)
+      .then(IndexApi.toJSON)
       .then(EventsModel.adaptToClient);
   }
 
@@ -65,14 +65,14 @@ export default class Api {
     });
   }
 
-  sync(data) {
+  sync(events) {
     return this._load({
       url: `points/sync`,
       method: Method.POST,
-      body: JSON.stringify(data),
+      body: JSON.stringify(events),
       headers: new Headers({"Content-Type": `application/json`})
     })
-      .then(Api.toJSON);
+      .then(IndexApi.toJSON);
   }
 
   _load({
@@ -87,8 +87,8 @@ export default class Api {
         `${this._endPoint}/${url}`,
         {method, body, headers}
     )
-      .then(Api.checkStatus)
-      .catch(Api.catchError);
+      .then(IndexApi.checkStatus)
+      .catch(IndexApi.catchError);
   }
 
   static checkStatus(response) {
