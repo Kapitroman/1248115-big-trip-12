@@ -376,9 +376,16 @@ export default class EventEdit extends SmartView {
 
   _dueDateChangeHandler(userDate, strDate, fp) {
     if (fp === this._datepicker[0]) {
-      this.updateData({
-        startDate: userDate[0]
-      });
+      if (+userDate[0] > +new Date(this._data.endDate)) {
+        this.updateData({
+          startDate: userDate[0],
+          endDate: userDate[0]
+        });
+      } else {
+        this.updateData({
+          startDate: userDate[0],
+        });
+      }
     } else {
       this.updateData({
         endDate: userDate[0]

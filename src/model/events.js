@@ -14,7 +14,7 @@ export default class Events extends Observer {
   }
 
   getEvents() {
-    return this._events;
+    return this._events.sort(sortTable);
   }
 
   updateData(updateType, update) {
