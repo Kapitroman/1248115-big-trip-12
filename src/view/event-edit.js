@@ -350,10 +350,10 @@ export default class EventEdit extends SmartView {
 
   _offerInputHandler(evt) {
     evt.preventDefault();
-    let title = evt.target.dataset.title;
+    const title = evt.target.dataset.title;
     const listTypesOffers = this._offers[this._data.type];
     let listItemOffers = this._data.offers;
-    let index = listTypesOffers.findIndex((item) => item[`title`] === title);
+    const index = listTypesOffers.findIndex((item) => item[`title`] === title);
     if (evt.target.checked) {
       listItemOffers.push(listTypesOffers[index]);
     } else {

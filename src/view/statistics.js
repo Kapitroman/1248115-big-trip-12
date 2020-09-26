@@ -91,7 +91,7 @@ const renderMoneyChart = (moneyCtx, events) => {
 const renderTransportChart = (transportCtx, events) => {
 
   const result = (eventsTrip) => {
-    let transportTrip = [];
+    const transportTrip = [];
     const uniqTypes = uniqTypesTrip(eventsTrip);
     for (let i = 0; i < uniqTypes.length; i++) {
       let count = 0;
@@ -175,7 +175,7 @@ const renderTransportChart = (transportCtx, events) => {
 const renderTimeSpendChart = (timeSpendCtx, events) => {
 
   const result = (eventsTrip) => {
-    let timeTrip = [];
+    const timeTrip = [];
     const uniqTypes = uniqTypesTrip(eventsTrip);
     for (let i = 0; i < uniqTypes.length; i++) {
       let time = 0;

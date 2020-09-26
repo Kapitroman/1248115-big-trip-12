@@ -26,7 +26,7 @@ export default class Offers extends Observer {
 
   static adaptToServer(offers) {
     const adaptedOffers = [];
-    for (let prop in offers) {
+    for (const prop in offers) {
       if (!offers.hasOwnProperty(prop)) {
         continue;
       }
