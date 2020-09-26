@@ -129,6 +129,7 @@ export default class Trip {
     switch (updateType) {
       case UpdateType.PATCH:
         this._eventPresenter[data.id].init(data, listOffers, listDestinations);
+        this._eventPresenter[data.id].replaceEventToEdit();
         break;
       case UpdateType.MINOR:
         this._clearTrip();

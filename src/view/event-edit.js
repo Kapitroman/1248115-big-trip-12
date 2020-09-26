@@ -250,9 +250,9 @@ export default class EventEdit extends SmartView {
     this._typeInputHandler = this._typeInputHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
     this._destinationInputHandler = this._destinationInputHandler.bind(this);
-    this._favoriteInputHandler = this._favoriteInputHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
+    this._formFavoriteClickHandler = this._formFavoriteClickHandler.bind(this);
 
     this._setInnerHandlers();
     this._setDatepicker();
@@ -283,6 +283,7 @@ export default class EventEdit extends SmartView {
     this._setDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setDeleteClickHandler(this._callback.deleteClick);
+    this.setFavoriteClickHandler(this._callback.favoriteClick);
   }
 
   _setDatepicker() {
@@ -313,17 +314,6 @@ export default class EventEdit extends SmartView {
     );
 
     this._datepicker = [calendarStart, calendarEnd];
-  }
-
-  _favoriteInputHandler(evt) {
-    evt.preventDefault();
-
-    this.updateData(
-        {
-          isFavorite: !this._data.isFavorite,
-          isCheckFavorite: !this._data.isCheckFavorite
-        }
-    );
   }
 
   _typeInputHandler(evt) {
@@ -411,12 +401,6 @@ export default class EventEdit extends SmartView {
       .querySelector(`.event__available-offers`)
       .addEventListener(`change`, this._offerInputHandler);
     }
-
-    if (this._action === `edit`) {
-      this.getElement()
-      .querySelector(`.event__favorite-btn`)
-      .addEventListener(`click`, this._favoriteInputHandler);
-    }
   }
 
   _formSubmitHandler(evt) {
@@ -437,6 +421,25 @@ export default class EventEdit extends SmartView {
   setDeleteClickHandler(callback) {
     this._callback.deleteClick = callback;
     this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
+  }
+
+  _formFavoriteClickHandler(evt) {
+    evt.preventDefault();
+    this._data.isCheckFavorite = !this._data.isCheckFavorite;
+    this._callback.favoriteClick(
+        {
+          isFavorite: !this._data.isFavorite,
+        }
+    );
+  }
+
+  setFavoriteClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    if (this._action === `edit`) {
+      this.getElement()
+      .querySelector(`.event__favorite-btn`)
+      .addEventListener(`click`, this._formFavoriteClickHandler);
+    }
   }
 
   static parseEventToData(event) {
