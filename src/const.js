@@ -42,3 +42,8 @@ export const FilterType = {
   FUTURE: `FUTURE`,
   PAST: `PAST`,
 };
+
+export const EditComponentType = {
+  EDIT: `EDIT`,
+  NEW: `NEW`
+};

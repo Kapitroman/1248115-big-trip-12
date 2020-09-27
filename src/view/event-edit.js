@@ -1,4 +1,4 @@
-import {PLACEHOLDER} from "./../const.js";
+import {PLACEHOLDER, EditComponentType} from "./../const.js";
 import SmartView from "./smart.js";
 import flatpickr from "flatpickr";
 
@@ -16,7 +16,7 @@ const BLANK_EVENT = {
 
 const createEventEditActionTemplate = (action, id, isCheckFavorite, isDisabled, isDeleting) => {
 
-  return action === `edit`
+  return action === EditComponentType.EDIT
     ?
     `<button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>${isDeleting ? `Deleting...` : `Delete`}</button>
 
@@ -253,6 +253,7 @@ export default class EventEdit extends SmartView {
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
     this._formFavoriteClickHandler = this._formFavoriteClickHandler.bind(this);
+    this._formCloseClickHandler = this._formCloseClickHandler.bind(this);
 
     this._setInnerHandlers();
     this._setDatepicker();
@@ -284,6 +285,7 @@ export default class EventEdit extends SmartView {
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setDeleteClickHandler(this._callback.deleteClick);
     this.setFavoriteClickHandler(this._callback.favoriteClick);
+    this.setCloseClickHandler(this._callback.closeClick);
   }
 
   _setDatepicker() {
@@ -435,10 +437,23 @@ export default class EventEdit extends SmartView {
 
   setFavoriteClickHandler(callback) {
     this._callback.favoriteClick = callback;
-    if (this._action === `edit`) {
+    if (this._action === EditComponentType.EDIT) {
       this.getElement()
       .querySelector(`.event__favorite-btn`)
       .addEventListener(`click`, this._formFavoriteClickHandler);
+    }
+  }
+
+  _formCloseClickHandler() {
+    this._callback.closeClick();
+  }
+
+  setCloseClickHandler(callback) {
+    this._callback.closeClick = callback;
+    if (this._action === EditComponentType.EDIT) {
+      this.getElement()
+      .querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, this._formCloseClickHandler);
     }
   }
 

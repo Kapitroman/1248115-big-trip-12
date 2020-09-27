@@ -1,8 +1,7 @@
 import EventEditView from "../view/event-edit.js";
 import TripEventsItemView from "../view/trip-events-item.js";
 import {render, RenderPosition, replace, remove} from "../utils/render.js";
-import {UserAction, UpdateType} from "../const.js";
-import {isDatesEqual} from "../utils/event.js";
+import {UserAction, UpdateType, EditComponentType} from "../const.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
@@ -30,6 +29,7 @@ export default class Event {
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
+    this._handleCloseClick = this._handleCloseClick.bind(this);
   }
 
   init(event, offers, destinations) {
@@ -39,12 +39,13 @@ export default class Event {
     const prevEventEditComponent = this._eventEditComponent;
 
     this._tripEventsItemComponent = new TripEventsItemView(event);
-    this._eventEditComponent = new EventEditView(`edit`, event, offers, destinations);
+    this._eventEditComponent = new EventEditView(EditComponentType.EDIT, event, offers, destinations);
 
     this._tripEventsItemComponent.setEditClickHandler(this._handleEditClick);
     this._eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventEditComponent.setDeleteClickHandler(this._handleDeleteClick);
     this._eventEditComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    this._eventEditComponent.setCloseClickHandler(this._handleCloseClick);
 
     if (prevTripEventsItemComponent === null || prevEventEditComponent === null) {
       render(this._eventListContainer, this._tripEventsItemComponent, RenderPosition.BEFOREEND);
@@ -135,14 +136,9 @@ export default class Event {
   }
 
   _handleFormSubmit(update) {
-    const isMinorUpdate =
-      !isDatesEqual(this._event.startDate, update.startDate) ||
-      !isDatesEqual(this._event.endDate, update.endDate) ||
-      this._event.price !== update.price;
-
     this._changeData(
         UserAction.UPDATE_EVENT,
-        isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+        UpdateType.MINOR,
         update
     );
   }
@@ -165,5 +161,10 @@ export default class Event {
             event
         )
     );
+  }
+
+  _handleCloseClick() {
+    this._eventEditComponent.reset(this._event);
+    this._replaceEditToEvent();
   }
 }

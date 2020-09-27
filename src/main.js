@@ -13,7 +13,7 @@ import IndexApi from "./api/index-api.js";
 import Store from "./api/store.js";
 import Provider from "./api/provider.js";
 
-const AUTHORIZATION = `Basic hS2sd3dfSwcl1s168`;
+const AUTHORIZATION = `Basic hS2sd3dfSwcl1s169`;
 const END_POINT = `https://12.ecmascript.pages.academy/big-trip`;
 const STORE_PREFIX = `big-trip-localstorage`;
 const STORE_VER = `v12`;
